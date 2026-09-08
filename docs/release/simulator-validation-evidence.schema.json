@@ -1,0 +1,353 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/climb-and-maintain/cm-acars/blob/main/docs/release/simulator-validation-evidence.schema.json",
+  "title": "Climb and Maintain ACARS simulator release evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "releaseVersion",
+    "applicationCommit",
+    "candidateWorkflow",
+    "artifact",
+    "testedAtUtc",
+    "tester",
+    "host",
+    "distributionPolicy",
+    "simulators",
+    "attestation"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "releaseVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+[.][0-9]+[.][0-9]+(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "applicationCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "candidateWorkflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workflowRunId", "artifactName"],
+      "properties": {
+        "workflowRunId": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "artifactName": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fileName", "sha256"],
+      "properties": {
+        "fileName": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$"
+        }
+      }
+    },
+    "testedAtUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tester": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identifier"],
+      "properties": {
+        "identifier": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["windowsEdition", "windowsBuild", "architecture"],
+      "properties": {
+        "windowsEdition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "windowsBuild": {
+          "type": "string",
+          "minLength": 1
+        },
+        "architecture": {
+          "const": "x64"
+        }
+      }
+    },
+    "distributionPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "microsoftBinaryBundled",
+        "microsoftBinaryDownloadedByApplication",
+        "managedWrapperReferenced"
+      ],
+      "properties": {
+        "microsoftBinaryBundled": {
+          "const": false
+        },
+        "microsoftBinaryDownloadedByApplication": {
+          "const": false
+        },
+        "managedWrapperReferenced": {
+          "const": false
+        }
+      }
+    },
+    "simulators": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "$ref": "#/$defs/simulatorResult"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["target"],
+            "properties": {
+              "target": {
+                "const": "msfs20"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["target"],
+            "properties": {
+              "target": {
+                "const": "msfs24"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "attestation": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "result": {
+      "type": "string",
+      "enum": ["pass", "fail", "blocked", "not-run"]
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result", "notes"],
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/result"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "simulatorResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "simulatorVersion",
+        "library",
+        "workflow",
+        "telemetry",
+        "recovery",
+        "degradedMode",
+        "issues"
+      ],
+      "properties": {
+        "target": {
+          "enum": ["msfs20", "msfs24"]
+        },
+        "simulatorVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "library": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "fileName",
+            "fileVersion",
+            "sha256",
+            "sourceDescription",
+            "obtainedByUser",
+            "bundledByApplication",
+            "downloadedByApplication"
+          ],
+          "properties": {
+            "fileName": {
+              "type": "string",
+              "minLength": 1
+            },
+            "fileVersion": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{64}$"
+            },
+            "sourceDescription": {
+              "type": "string",
+              "minLength": 1
+            },
+            "obtainedByUser": {
+              "const": true
+            },
+            "bundledByApplication": {
+              "const": false
+            },
+            "downloadedByApplication": {
+              "const": false
+            }
+          }
+        },
+        "workflow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "automaticDiscovery",
+            "manualSelection",
+            "structuralValidation",
+            "connectionTest",
+            "reportedTarget",
+            "enabledWithoutRecompile",
+            "enabledWithoutReinstall",
+            "applicationRestartRequired"
+          ],
+          "properties": {
+            "automaticDiscovery": {
+              "$ref": "#/$defs/check"
+            },
+            "manualSelection": {
+              "$ref": "#/$defs/check"
+            },
+            "structuralValidation": {
+              "$ref": "#/$defs/check"
+            },
+            "connectionTest": {
+              "$ref": "#/$defs/check"
+            },
+            "reportedTarget": {
+              "enum": ["msfs20", "msfs24"]
+            },
+            "enabledWithoutRecompile": {
+              "const": true
+            },
+            "enabledWithoutReinstall": {
+              "const": true
+            },
+            "applicationRestartRequired": {
+              "const": false
+            }
+          }
+        },
+        "telemetry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["aircraftIdentity", "standardSimVars", "readOnlyLVars"],
+          "properties": {
+            "aircraftIdentity": {
+              "$ref": "#/$defs/check"
+            },
+            "standardSimVars": {
+              "$ref": "#/$defs/check"
+            },
+            "readOnlyLVars": {
+              "$ref": "#/$defs/check"
+            }
+          }
+        },
+        "recovery": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["aircraftReload", "simulatorRestart"],
+          "properties": {
+            "aircraftReload": {
+              "$ref": "#/$defs/check"
+            },
+            "simulatorRestart": {
+              "$ref": "#/$defs/check"
+            }
+          }
+        },
+        "degradedMode": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "result",
+            "applicationLaunched",
+            "configurationAvailable",
+            "diagnosticsAvailable",
+            "phpVmsSetupAvailable",
+            "replayAvailable",
+            "notes"
+          ],
+          "properties": {
+            "result": {
+              "$ref": "#/$defs/result"
+            },
+            "applicationLaunched": {
+              "const": true
+            },
+            "configurationAvailable": {
+              "const": true
+            },
+            "diagnosticsAvailable": {
+              "const": true
+            },
+            "phpVmsSetupAvailable": {
+              "const": true
+            },
+            "replayAvailable": {
+              "const": true
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

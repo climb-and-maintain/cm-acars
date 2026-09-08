@@ -1,0 +1,12 @@
+{
+  "productName": "Climb and Maintain ACARS",
+  "shortProductName": "C&M ACARS",
+  "publisher": "Climb and Maintain, SPC",
+  "originalAuthor": "Climb and Maintain, SPC",
+  "productWebsite": "https://climbandmaintain.com",
+  "sourceRepository": "https://github.com/climb-and-maintain/cm-acars",
+  "supportUrl": "https://github.com/climb-and-maintain/cm-acars/issues",
+  "defaultAccent": "#005EA8",
+  "defaultBackendUrl": "https://",
+  "appId": "ClimbAndMaintain.Acars"
+}

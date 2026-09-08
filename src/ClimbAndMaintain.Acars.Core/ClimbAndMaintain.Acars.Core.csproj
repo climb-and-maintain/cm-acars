@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Simulator-neutral domain model and flight-state engine for Climb and Maintain ACARS.</Description>
+  </PropertyGroup>
+</Project>

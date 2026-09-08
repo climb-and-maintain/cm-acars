@@ -1,0 +1,9 @@
+# Default review owner. Replace with a repository team if stewardship expands.
+* @climb-and-maintain
+
+# Security and release policy require steward review.
+/SECURITY.md @climb-and-maintain
+/GOVERNANCE.md @climb-and-maintain
+/installer/ @climb-and-maintain
+/.github/workflows/ @climb-and-maintain
+/docs/release/ @climb-and-maintain

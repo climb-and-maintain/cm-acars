@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Native phpVMS REST integration for Climb and Maintain ACARS.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClimbAndMaintain.Acars.Application\ClimbAndMaintain.Acars.Application.csproj" />
+    <ProjectReference Include="..\ClimbAndMaintain.Acars.Core\ClimbAndMaintain.Acars.Core.csproj" />
+  </ItemGroup>
+</Project>

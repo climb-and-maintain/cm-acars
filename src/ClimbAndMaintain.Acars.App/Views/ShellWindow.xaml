@@ -1,0 +1,590 @@
+<Window x:Class="ClimbAndMaintain.Acars.App.Views.ShellWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
+        xmlns:behaviors="clr-namespace:ClimbAndMaintain.Acars.App.Behaviors"
+        xmlns:presentation="clr-namespace:ClimbAndMaintain.Acars.App.Presentation"
+        Title="{Binding Branding.ProductName}"
+        Width="1180"
+        Height="780"
+        MinWidth="900"
+        MinHeight="620"
+        WindowStartupLocation="CenterScreen"
+        AutomationProperties.Name="ACARS main window"
+        AutomationProperties.AutomationId="ShellWindow">
+  <Window.Resources>
+    <DataTemplate DataType="{x:Type presentation:SimulatorSetupViewModel}">
+      <StackPanel>
+        <TextBlock Margin="0,0,0,14"
+                   Style="{StaticResource MutedTextStyle}"
+                   Text="The application never downloads or bundles Microsoft libraries. Select a native x64 library supplied with your own simulator or SDK installation. Static validation and live simulator verification are separate." />
+
+        <GroupBox Header="Microsoft Flight Simulator 2020 library"
+                  AutomationProperties.Name="Microsoft Flight Simulator 2020 SimConnect library">
+          <StackPanel>
+            <Label Target="{Binding ElementName=Msfs2020PathBox}" Content="Native library path" />
+            <DockPanel LastChildFill="True">
+              <Button DockPanel.Dock="Right"
+                      Command="{Binding Browse2020Command}"
+                      Content="Browse…"
+                      AutomationProperties.Name="Browse for MSFS 2020 native SimConnect library"
+                      AutomationProperties.AutomationId="SimConnect2020.Browse" />
+              <TextBox x:Name="Msfs2020PathBox"
+                       Margin="0,0,8,8"
+                       Text="{Binding Msfs2020LibraryPath, UpdateSourceTrigger=PropertyChanged}"
+                       AutomationProperties.Name="MSFS 2020 native SimConnect library path"
+                       AutomationProperties.AutomationId="SimConnect2020.Path" />
+            </DockPanel>
+            <TextBlock Margin="0,0,0,8"
+                       Style="{StaticResource MutedTextStyle}"
+                       Text="Security: testing or connecting loads native code into this application. Select only a Microsoft-provided library you trust."
+                       AutomationProperties.Name="Security warning: testing or connecting loads the selected native library. Use only a trusted Microsoft-provided file." />
+            <WrapPanel>
+              <Button Command="{Binding Validate2020Command}"
+                      Content="Validate file"
+                      AutomationProperties.Name="Validate MSFS 2020 library file"
+                      AutomationProperties.AutomationId="SimConnect2020.Validate" />
+              <Button Command="{Binding Test2020Command}"
+                      Content="Test with MSFS 2020"
+                      AutomationProperties.Name="Test selected library with Microsoft Flight Simulator 2020"
+                      AutomationProperties.HelpText="Start MSFS 2020 before running this target-specific test."
+                      AutomationProperties.AutomationId="SimConnect2020.Test" />
+              <Button Command="{Binding Connect2020Command}"
+                      Content="Connect live"
+                      AutomationProperties.Name="Connect live telemetry to Microsoft Flight Simulator 2020"
+                      AutomationProperties.HelpText="Loads the selected user-supplied library for this application session."
+                      AutomationProperties.AutomationId="SimConnect2020.Connect" />
+            </WrapPanel>
+            <TextBlock Style="{StaticResource StatusTextStyle}"
+                       Text="{Binding Msfs2020Status}"
+                       AutomationProperties.Name="MSFS 2020 library status"
+                       AutomationProperties.LiveSetting="Polite" />
+          </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Microsoft Flight Simulator 2024 library"
+                  AutomationProperties.Name="Microsoft Flight Simulator 2024 SimConnect library">
+          <StackPanel>
+            <Label Target="{Binding ElementName=Msfs2024PathBox}" Content="Native library path" />
+            <DockPanel LastChildFill="True">
+              <Button DockPanel.Dock="Right"
+                      Command="{Binding Browse2024Command}"
+                      Content="Browse…"
+                      AutomationProperties.Name="Browse for MSFS 2024 native SimConnect library"
+                      AutomationProperties.AutomationId="SimConnect2024.Browse" />
+              <TextBox x:Name="Msfs2024PathBox"
+                       Margin="0,0,8,8"
+                       Text="{Binding Msfs2024LibraryPath, UpdateSourceTrigger=PropertyChanged}"
+                       AutomationProperties.Name="MSFS 2024 native SimConnect library path"
+                       AutomationProperties.AutomationId="SimConnect2024.Path" />
+            </DockPanel>
+            <TextBlock Margin="0,0,0,8"
+                       Style="{StaticResource MutedTextStyle}"
+                       Text="Security: testing or connecting loads native code into this application. Select only a Microsoft-provided library you trust."
+                       AutomationProperties.Name="Security warning: testing or connecting loads the selected native library. Use only a trusted Microsoft-provided file." />
+            <WrapPanel>
+              <Button Command="{Binding Validate2024Command}"
+                      Content="Validate file"
+                      AutomationProperties.Name="Validate MSFS 2024 library file"
+                      AutomationProperties.AutomationId="SimConnect2024.Validate" />
+              <Button Command="{Binding Test2024Command}"
+                      Content="Test with MSFS 2024"
+                      AutomationProperties.Name="Test selected library with Microsoft Flight Simulator 2024"
+                      AutomationProperties.HelpText="Start MSFS 2024 before running this target-specific test."
+                      AutomationProperties.AutomationId="SimConnect2024.Test" />
+              <Button Command="{Binding Connect2024Command}"
+                      Content="Connect live"
+                      AutomationProperties.Name="Connect live telemetry to Microsoft Flight Simulator 2024"
+                      AutomationProperties.HelpText="Loads the selected user-supplied library for this application session."
+                      AutomationProperties.AutomationId="SimConnect2024.Connect" />
+            </WrapPanel>
+            <TextBlock Style="{StaticResource StatusTextStyle}"
+                       Text="{Binding Msfs2024Status}"
+                       AutomationProperties.Name="MSFS 2024 library status"
+                       AutomationProperties.LiveSetting="Polite" />
+          </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Live simulator and aircraft profile">
+          <StackPanel>
+            <TextBlock Style="{StaticResource StatusTextStyle}"
+                       Text="{Binding LiveConnectionStatus}"
+                       AutomationProperties.Name="Live simulator connection status"
+                       AutomationProperties.LiveSetting="Polite" />
+            <TextBlock Text="{Binding LiveTelemetryStatus}"
+                       AutomationProperties.Name="Live simulator telemetry status"
+                       AutomationProperties.LiveSetting="Polite" />
+            <TextBlock Margin="0,8,0,0" Text="{Binding LiveProfileStatus}"
+                       AutomationProperties.Name="Selected aircraft profile status" />
+            <ListBox MinHeight="90"
+                     MaxHeight="220"
+                     Margin="0,8,0,0"
+                     ItemsSource="{Binding ProfileDiagnostics}"
+                     AutomationProperties.Name="Aircraft profile inspector with raw and interpreted variables"
+                     AutomationProperties.AutomationId="Profiles.Inspector" />
+            <WrapPanel Margin="0,8,0,0">
+              <Button Command="{Binding DisconnectCommand}"
+                      Content="Disconnect live simulator"
+                      AutomationProperties.Name="Disconnect the live simulator while keeping the application available"
+                      AutomationProperties.AutomationId="SimConnect.Disconnect" />
+              <Button Command="{Binding ReloadProfilesCommand}"
+                      Content="Reload profiles"
+                      AutomationProperties.Name="Reload aircraft profiles and reconnect if needed"
+                      AutomationProperties.AutomationId="Profiles.Reload" />
+            </WrapPanel>
+          </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Automatic discovery">
+          <StackPanel>
+            <Button HorizontalAlignment="Left"
+                    Command="{Binding DiscoverCommand}"
+                    Content="Discover libraries"
+                    AutomationProperties.Name="Automatically discover native SimConnect library candidates"
+                    AutomationProperties.AutomationId="SimConnect.Discover" />
+            <Label Target="{Binding ElementName=CandidateBox}" Content="Discovered candidate" />
+            <ComboBox x:Name="CandidateBox"
+                      Margin="0,0,0,8"
+                      ItemsSource="{Binding Candidates}"
+                      SelectedItem="{Binding SelectedCandidate}"
+                      DisplayMemberPath="DisplayName"
+                      AutomationProperties.Name="Discovered SimConnect library candidates"
+                      AutomationProperties.AutomationId="SimConnect.Candidates" />
+            <WrapPanel>
+              <Button Command="{Binding UseCandidateFor2020Command}"
+                      Content="Use for 2020"
+                      AutomationProperties.Name="Use selected candidate for MSFS 2020" />
+              <Button Command="{Binding UseCandidateFor2024Command}"
+                      Content="Use for 2024"
+                      AutomationProperties.Name="Use selected candidate for MSFS 2024" />
+              <Button Command="{Binding SaveSelectionsCommand}"
+                      Content="Save selections"
+                      AutomationProperties.Name="Save separate simulator library selections"
+                      AutomationProperties.AutomationId="SimConnect.Save" />
+            </WrapPanel>
+          </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Validation and troubleshooting">
+          <ListBox MinHeight="90"
+                   MaxHeight="220"
+                   ItemsSource="{Binding Diagnostics}"
+                   AutomationProperties.Name="SimConnect validation and troubleshooting messages"
+                   AutomationProperties.AutomationId="SimConnect.Diagnostics" />
+        </GroupBox>
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type presentation:PhpVmsSetupViewModel}">
+      <StackPanel>
+        <Label Target="{Binding ElementName=PhpVmsUrlBox}" Content="phpVMS site URL" />
+        <TextBox x:Name="PhpVmsUrlBox"
+                 Margin="0,0,0,10"
+                 Text="{Binding BaseUrl, UpdateSourceTrigger=PropertyChanged}"
+                 AutomationProperties.Name="phpVMS site URL"
+                 AutomationProperties.HelpText="HTTPS is required unless the developer-only local HTTP override is enabled."
+                 AutomationProperties.AutomationId="PhpVms.BaseUrl" />
+        <Label Target="{Binding ElementName=PhpVmsApiKeyBox}" Content="API key" />
+        <PasswordBox x:Name="PhpVmsApiKeyBox"
+                     Margin="0,0,0,10"
+                     behaviors:PasswordBoxBinding.BoundPassword="{Binding ApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     AutomationProperties.Name="phpVMS API key"
+                     AutomationProperties.HelpText="The key is stored with Windows user-scoped encryption and is never written to normal settings or diagnostics."
+                     AutomationProperties.AutomationId="PhpVms.ApiKey" />
+        <CheckBox Margin="0,0,0,12"
+                  IsChecked="{Binding AllowInsecureLocalServer}"
+                  Content="Developer only: permit HTTP for a local phpVMS server"
+                  AutomationProperties.Name="Permit insecure HTTP for a local development server"
+                  AutomationProperties.HelpText="HTTP sends credentials without transport encryption. Use only with a local development server."
+                  AutomationProperties.AutomationId="PhpVms.AllowHttp" />
+        <WrapPanel>
+          <Button Command="{Binding TestCommand}"
+                  Content="Test connection"
+                  AutomationProperties.Name="Test phpVMS connection and authentication"
+                  AutomationProperties.AutomationId="PhpVms.Test" />
+          <Button Command="{Binding SaveCommand}"
+                  Content="Save phpVMS settings"
+                  AutomationProperties.Name="Save phpVMS settings and protect API key"
+                  AutomationProperties.AutomationId="PhpVms.Save" />
+        </WrapPanel>
+        <TextBlock Style="{StaticResource StatusTextStyle}"
+                   Text="{Binding Status}"
+                   AutomationProperties.Name="phpVMS connection status"
+                   AutomationProperties.LiveSetting="Polite" />
+        <TextBlock Text="{Binding PilotStatus}"
+                   AutomationProperties.Name="Authenticated phpVMS pilot" />
+        <TextBlock Text="{Binding LastSuccessfulRequest}"
+                   AutomationProperties.Name="Last successful phpVMS request" />
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type presentation:DashboardPageViewModel}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource PageTitleStyle}" Text="{Binding Title}" />
+        <TextBlock Margin="0,0,0,20" Style="{StaticResource MutedTextStyle}" Text="{Binding Description}" />
+        <Border Margin="0,0,0,16"
+                Padding="14"
+                Background="{DynamicResource SurfaceMutedBrush}"
+                BorderBrush="{DynamicResource WarningBrush}"
+                BorderThickness="2"
+                Visibility="{Binding FlightOperations.HasRecoveryPrompt, Converter={StaticResource BooleanToVisibilityConverter}}"
+                AutomationProperties.Name="Unfinished flight recovery">
+          <StackPanel>
+            <TextBlock FontWeight="SemiBold" Text="Unfinished flight found" />
+            <TextBlock Margin="0,4,0,8" Text="{Binding FlightOperations.Status}" />
+            <WrapPanel>
+              <Button Command="{Binding FlightOperations.ResumeRecoveredCommand}"
+                      Content="Resume"
+                      AutomationProperties.Name="Resume unfinished flight"
+                      AutomationProperties.AutomationId="Recovery.Resume" />
+              <Button Command="{Binding FlightOperations.DiscardRecoveredCommand}"
+                      Content="Discard"
+                      AutomationProperties.Name="Discard unfinished flight and queue cancellation"
+                      AutomationProperties.AutomationId="Recovery.Discard" />
+              <Button Command="{Binding FlightOperations.InspectRecoveredCommand}"
+                      Content="Inspect"
+                      AutomationProperties.Name="Inspect unfinished flight details"
+                      AutomationProperties.AutomationId="Recovery.Inspect" />
+            </WrapPanel>
+          </StackPanel>
+        </Border>
+        <UniformGrid Columns="2">
+          <GroupBox Header="Simulator">
+            <StackPanel>
+              <TextBlock FontWeight="SemiBold" Text="MSFS 2020" />
+              <TextBlock Margin="0,0,0,10" Text="{Binding Simulator.Msfs2020Status}" />
+              <TextBlock FontWeight="SemiBold" Text="MSFS 2024" />
+              <TextBlock Text="{Binding Simulator.Msfs2024Status}" />
+            </StackPanel>
+          </GroupBox>
+          <GroupBox Header="phpVMS">
+            <StackPanel>
+              <TextBlock FontWeight="SemiBold" Text="Server" />
+              <TextBlock Margin="0,0,0,10" Text="{Binding PhpVms.BaseUrl}" />
+              <TextBlock FontWeight="SemiBold" Text="Connection" />
+              <TextBlock Text="{Binding PhpVms.Status}" />
+            </StackPanel>
+          </GroupBox>
+          <GroupBox Header="Flight">
+            <StackPanel>
+              <TextBlock FontWeight="SemiBold" Text="Flight" />
+              <TextBlock Margin="0,0,0,10" Text="{Binding FlightOperations.CurrentFlight}" />
+              <TextBlock FontWeight="SemiBold" Text="Current phase" />
+              <TextBlock Margin="0,0,0,10"
+                         Text="{Binding FlightOperations.CurrentPhase}"
+                         AutomationProperties.Name="Current flight phase"
+                         AutomationProperties.LiveSetting="Polite" />
+              <TextBlock Text="{Binding FlightOperations.ElapsedTime, StringFormat=Elapsed: {0}}" />
+              <TextBlock Text="{Binding FlightOperations.BlockTime, StringFormat=Active block time: {0}}" />
+              <TextBlock Text="{Binding FlightOperations.AirborneTime, StringFormat=Airborne flight time: {0}}" />
+              <WrapPanel Margin="0,10,0,0">
+                <Button Command="{Binding FlightOperations.PauseCommand}"
+                        Content="Pause"
+                        AutomationProperties.Name="Pause active flight tracking"
+                        AutomationProperties.AutomationId="Dashboard.Pause" />
+                <Button Command="{Binding FlightOperations.ResumeCommand}"
+                        Content="Resume"
+                        AutomationProperties.Name="Resume paused flight tracking"
+                        AutomationProperties.AutomationId="Dashboard.Resume" />
+                <Button Command="{Binding FlightOperations.SynchronizeCommand}"
+                        Content="Sync queue"
+                        AutomationProperties.Name="Synchronize pending ACARS reports with phpVMS"
+                        AutomationProperties.AutomationId="Dashboard.Sync" />
+              </WrapPanel>
+            </StackPanel>
+          </GroupBox>
+          <GroupBox Header="Telemetry">
+            <StackPanel>
+              <TextBlock Text="{Binding FlightOperations.Telemetry}"
+                         AutomationProperties.Name="Current live flight telemetry"
+                         AutomationProperties.LiveSetting="Polite" />
+              <TextBlock Margin="0,8,0,0" Text="{Binding Replay.LastTelemetry, StringFormat=Replay: {0}}" />
+              <TextBlock Margin="0,10,0,0" Style="{StaticResource MutedTextStyle}" Text="Replay and diagnostics work without a simulator library." />
+            </StackPanel>
+          </GroupBox>
+        </UniformGrid>
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type presentation:FlightsPageViewModel}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource PageTitleStyle}" Text="{Binding Title}" />
+        <TextBlock Margin="0,0,0,20" Style="{StaticResource MutedTextStyle}" Text="{Binding Description}" />
+        <GroupBox Header="Available phpVMS flights and bids">
+          <StackPanel>
+            <Button HorizontalAlignment="Left"
+                    Command="{Binding FlightOperations.RefreshFlightsCommand}"
+                    Content="Refresh flights"
+                    AutomationProperties.Name="Retrieve available flights and bids from phpVMS"
+                    AutomationProperties.AutomationId="Flights.Refresh" />
+            <ListBox MinHeight="110"
+                     Margin="0,8"
+                     ItemsSource="{Binding FlightOperations.AvailableFlights}"
+                     SelectedItem="{Binding FlightOperations.SelectedFlight}"
+                     DisplayMemberPath="DisplayName"
+                     AutomationProperties.Name="Available phpVMS flights and bids"
+                     AutomationProperties.AutomationId="Flights.Available" />
+            <Button HorizontalAlignment="Left"
+                    Command="{Binding FlightOperations.StartCommand}"
+                    Content="Select and start flight"
+                    AutomationProperties.Name="Prefile and start selected phpVMS flight"
+                    AutomationProperties.AutomationId="Flights.Start" />
+            <TextBlock Style="{StaticResource StatusTextStyle}"
+                       Text="{Binding FlightOperations.Status}"
+                       AutomationProperties.Name="Flight operation status"
+                       AutomationProperties.LiveSetting="Polite" />
+          </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Active flight">
+          <StackPanel>
+            <TextBlock FontWeight="SemiBold" Text="{Binding FlightOperations.CurrentFlight}" />
+            <TextBlock Text="{Binding FlightOperations.CurrentPhase, StringFormat=Phase: {0}}"
+                       AutomationProperties.Name="Active flight phase"
+                       AutomationProperties.LiveSetting="Polite" />
+            <TextBlock Text="{Binding FlightOperations.Telemetry}" />
+            <WrapPanel Margin="0,8,0,0">
+              <Button Command="{Binding FlightOperations.PauseCommand}"
+                      Content="Pause"
+                      AutomationProperties.Name="Pause active flight tracking from Flights"
+                      AutomationProperties.AutomationId="Flights.Pause" />
+              <Button Command="{Binding FlightOperations.ResumeCommand}"
+                      Content="Resume"
+                      AutomationProperties.Name="Resume paused flight tracking from Flights"
+                      AutomationProperties.AutomationId="Flights.Resume" />
+              <Button Command="{Binding FlightOperations.CancelCommand}"
+                      Content="Cancel flight"
+                      AutomationProperties.Name="Cancel active flight and queue phpVMS cancellation"
+                      AutomationProperties.AutomationId="Flights.Cancel" />
+              <Button Command="{Binding FlightOperations.SynchronizeCommand}"
+                      Content="Sync queue"
+                      AutomationProperties.Name="Synchronize pending flight reports from Flights"
+                      AutomationProperties.AutomationId="Flights.Sync" />
+            </WrapPanel>
+          </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Recorded telemetry playback">
+          <StackPanel>
+            <TextBlock Margin="0,0,0,10" Text="{Binding Replay.RecordingPath}" />
+            <WrapPanel>
+              <Button Command="{Binding Replay.LoadCommand}"
+                      Content="Open recording…"
+                      AutomationProperties.Name="Open recorded telemetry JSON Lines file"
+                      AutomationProperties.AutomationId="Replay.Open" />
+              <ComboBox Width="210"
+                        Margin="0,0,8,8"
+                        ItemsSource="{Binding Replay.PlaybackRates}"
+                        SelectedItem="{Binding Replay.SelectedRate}"
+                        DisplayMemberPath="Name"
+                        AutomationProperties.Name="Replay speed"
+                        AutomationProperties.AutomationId="Replay.Speed" />
+              <Button Command="{Binding Replay.PlayCommand}"
+                      Content="Start replay"
+                      AutomationProperties.Name="Start telemetry replay"
+                      AutomationProperties.AutomationId="Replay.Start" />
+              <Button Command="{Binding Replay.StopCommand}"
+                      Content="Stop replay"
+                      AutomationProperties.Name="Stop telemetry replay"
+                      AutomationProperties.AutomationId="Replay.Stop" />
+            </WrapPanel>
+            <TextBlock Style="{StaticResource StatusTextStyle}"
+                       Text="{Binding Replay.Status}"
+                       AutomationProperties.Name="Replay status"
+                       AutomationProperties.LiveSetting="Polite" />
+            <TextBlock Text="{Binding Replay.LastTelemetry}" />
+            <TextBlock Text="{Binding Replay.FrameCount, StringFormat=Frames processed: {0:N0}}" />
+            <TextBlock Text="{Binding Replay.Phase, StringFormat=Detected phase: {0}}" />
+          </StackPanel>
+        </GroupBox>
+        <GroupBox Header="File completed PIREP">
+          <StackPanel>
+            <TextBlock Margin="0,0,0,8" Text="Filing becomes available after the durable phase engine reaches On Block. Measured distance and airborne time are filled automatically; review or edit them before filing." />
+            <Label Target="{Binding ElementName=DistanceBox}" Content="Distance (nautical miles)" />
+            <TextBox x:Name="DistanceBox"
+                     Text="{Binding FlightOperations.DistanceNauticalMiles, UpdateSourceTrigger=PropertyChanged}"
+                     AutomationProperties.Name="Completed flight distance in nautical miles"
+                     AutomationProperties.AutomationId="Flights.Distance" />
+            <Label Target="{Binding ElementName=FlightTimeBox}" Content="Flight time (minutes)" />
+            <TextBox x:Name="FlightTimeBox"
+                     Text="{Binding FlightOperations.FlightTimeMinutes, UpdateSourceTrigger=PropertyChanged}"
+                     AutomationProperties.Name="Completed flight time in minutes"
+                     AutomationProperties.AutomationId="Flights.FlightTime" />
+            <Button HorizontalAlignment="Left"
+                    Command="{Binding FlightOperations.FileCommand}"
+                    Content="Queue completed PIREP"
+                    AutomationProperties.Name="Review and queue completed PIREP for phpVMS"
+                    AutomationProperties.AutomationId="Flights.File" />
+          </StackPanel>
+        </GroupBox>
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type presentation:FlightLogPageViewModel}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource PageTitleStyle}" Text="{Binding Title}" />
+        <TextBlock Margin="0,0,0,20" Style="{StaticResource MutedTextStyle}" Text="{Binding Description}" />
+        <ListBox MinHeight="260"
+                 ItemsSource="{Binding Entries}"
+                 AutomationProperties.Name="Flight log entries"
+                 AutomationProperties.AutomationId="FlightLog.Entries" />
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type presentation:DiagnosticsPageViewModel}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource PageTitleStyle}" Text="{Binding Title}" />
+        <TextBlock Margin="0,0,0,20" Style="{StaticResource MutedTextStyle}" Text="{Binding Description}" />
+        <GroupBox Header="Application">
+          <StackPanel>
+            <TextBlock Text="{Binding ApplicationVersion, StringFormat=Version: {0}}" />
+            <TextBlock Text="{Binding ApplicationBuild, StringFormat=Build: {0}}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Runtime, StringFormat=Runtime: {0}}" />
+            <TextBlock Text="{Binding OperatingSystem, StringFormat=Operating system: {0}}" />
+            <TextBlock Text="{Binding DatabaseStatus}" TextWrapping="Wrap" />
+          </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Queue">
+          <StackPanel>
+            <TextBlock Text="{Binding QueueStatus}" />
+            <TextBlock Text="{Binding QueueRetryStatus}" TextWrapping="Wrap" />
+            <Button HorizontalAlignment="Left"
+                    Command="{Binding RefreshCommand}"
+                    Content="Refresh diagnostics"
+                    AutomationProperties.Name="Refresh queue and application diagnostics"
+                    AutomationProperties.AutomationId="Diagnostics.Refresh" />
+          </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Simulator libraries and connection testing">
+          <ContentControl Content="{Binding Simulator}" />
+        </GroupBox>
+        <GroupBox Header="phpVMS">
+          <StackPanel>
+            <TextBlock Text="{Binding PhpVms.Status}" />
+            <TextBlock Text="{Binding PhpVms.PilotStatus}" />
+            <TextBlock Text="{Binding PhpVms.LastSuccessfulRequest}" />
+            <TextBlock Text="{Binding PhpVmsRequestStatus}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding PhpVmsLastSuccessfulRequest}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding PhpVmsRateLimitStatus}" TextWrapping="Wrap" />
+            <Button HorizontalAlignment="Left"
+                    Command="{Binding PhpVms.TestCommand}"
+                    Content="Re-test phpVMS"
+                    AutomationProperties.Name="Re-test phpVMS connection and authenticated pilot"
+                    AutomationProperties.AutomationId="Diagnostics.TestPhpVms" />
+          </StackPanel>
+        </GroupBox>
+        <WrapPanel>
+          <Button Command="{Binding CopyCommand}"
+                  Content="Copy diagnostics"
+                  AutomationProperties.Name="Copy sanitized diagnostics"
+                  AutomationProperties.AutomationId="Diagnostics.Copy" />
+          <Button Command="{Binding ExportCommand}"
+                  Content="Export support bundle"
+                  AutomationProperties.Name="Export sanitized support bundle"
+                  AutomationProperties.AutomationId="Diagnostics.Export" />
+          <Button Command="{Binding OpenLogFolderCommand}"
+                  Content="Open log folder"
+                  AutomationProperties.Name="Open application log folder"
+                  AutomationProperties.AutomationId="Diagnostics.OpenLogs" />
+        </WrapPanel>
+        <TextBlock Style="{StaticResource StatusTextStyle}"
+                   Text="{Binding ActionStatus}"
+                   AutomationProperties.Name="Diagnostics action status"
+                   AutomationProperties.LiveSetting="Polite" />
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type presentation:SettingsPageViewModel}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource PageTitleStyle}" Text="{Binding Title}" />
+        <TextBlock Margin="0,0,0,20" Style="{StaticResource MutedTextStyle}" Text="{Binding Description}" />
+        <GroupBox Header="Appearance and accessibility">
+          <StackPanel>
+            <WrapPanel>
+              <Button Command="{Binding UseSystemThemeCommand}"
+                      Content="Use system"
+                      AutomationProperties.Name="Use system appearance"
+                      AutomationProperties.AutomationId="Appearance.System" />
+              <Button Command="{Binding UseLightThemeCommand}"
+                      Content="Use light"
+                      AutomationProperties.Name="Use light appearance"
+                      AutomationProperties.AutomationId="Appearance.Light" />
+              <Button Command="{Binding UseDarkThemeCommand}"
+                      Content="Use dark"
+                      AutomationProperties.Name="Use dark appearance"
+                      AutomationProperties.AutomationId="Appearance.Dark" />
+            </WrapPanel>
+            <TextBlock Text="{Binding AppearanceStatus}"
+                       AutomationProperties.Name="Appearance status"
+                       AutomationProperties.LiveSetting="Polite" />
+            <TextBlock Margin="0,8,0,0" Style="{StaticResource MutedTextStyle}" Text="Windows High Contrast overrides decorative themes automatically. Status is always conveyed with text, not color alone." />
+          </StackPanel>
+        </GroupBox>
+        <GroupBox Header="phpVMS connection">
+          <ContentControl Content="{Binding PhpVms}" />
+        </GroupBox>
+        <GroupBox Header="Simulator libraries">
+          <ContentControl Content="{Binding Simulator}" />
+        </GroupBox>
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type presentation:AboutPageViewModel}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource PageTitleStyle}" Text="{Binding Title}" />
+        <TextBlock Margin="0,0,0,20" Style="{StaticResource MutedTextStyle}" Text="{Binding Description}" />
+        <GroupBox Header="Project">
+          <StackPanel>
+            <TextBlock FontSize="20" FontWeight="SemiBold" Text="{Binding Branding.ProductName}" />
+            <TextBlock Margin="0,8,0,0" Text="{Binding Version, StringFormat=Version {0}}" />
+            <TextBlock Margin="0,8,0,0" Text="{Binding License}" />
+            <TextBlock Margin="0,8,0,0" Text="{Binding Attribution}" />
+          </StackPanel>
+        </GroupBox>
+        <TextBlock Text="No Microsoft SimConnect library is distributed, downloaded, or embedded by this application." />
+      </StackPanel>
+    </DataTemplate>
+  </Window.Resources>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="68" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="230" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <Border Grid.Row="0" Grid.ColumnSpan="2" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+      <StackPanel Margin="22,10" Orientation="Horizontal" VerticalAlignment="Center">
+        <TextBlock FontSize="21" FontWeight="SemiBold" Text="{Binding Branding.ProductName}" />
+        <TextBlock Margin="14,5,0,0" Style="{StaticResource MutedTextStyle}" Text="Flight tracking that keeps its composure" />
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="1" Grid.Column="0" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0">
+      <ListBox x:Name="NavigationList"
+               Margin="12"
+               ItemsSource="{Binding Pages}"
+               SelectedItem="{Binding SelectedPage}"
+               DisplayMemberPath="Name"
+               AutomationProperties.Name="Primary navigation"
+               AutomationProperties.AutomationId="PrimaryNavigation" />
+    </Border>
+
+    <ScrollViewer Grid.Row="1"
+                  Grid.Column="1"
+                  Padding="{StaticResource PagePadding}"
+                  HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto"
+                  AutomationProperties.Name="{Binding SelectedPage.Title}"
+                  AutomationProperties.AutomationId="{Binding SelectedPage.AutomationId}">
+      <ContentControl Content="{Binding SelectedPage}" />
+    </ScrollViewer>
+
+    <Border Grid.Row="2" Grid.ColumnSpan="2" Padding="12,7" Background="{DynamicResource SurfaceMutedBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0">
+      <TextBlock Text="Missing simulator prerequisites never block settings, diagnostics, phpVMS configuration, or replay mode."
+                 AutomationProperties.Name="Application availability status" />
+    </Border>
+  </Grid>
+</Window>

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private security report
+    url: https://github.com/climb-and-maintain/cm-acars/security/advisories/new
+    about: Report vulnerabilities, credential exposure, or unsafe native-library behavior privately.
+  - name: Support guide
+    url: https://github.com/climb-and-maintain/cm-acars/blob/main/SUPPORT.md
+    about: Choose the correct support route before opening an issue.

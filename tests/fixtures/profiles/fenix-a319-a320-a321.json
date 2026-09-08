@@ -1,0 +1,63 @@
+{
+  "aircraft": {
+    "title": "Fenix A321",
+    "configurationPath": "fnx321/aircraft.cfg",
+    "simulator": "msfs24"
+  },
+  "cases": [
+    {
+      "name": "primary on positions",
+      "values": {
+        "L:S_OH_EXT_LT_BEACON": 1,
+        "L:S_OH_EXT_LT_NAV_LOGO": 1,
+        "L:S_OH_SIGNS": 1,
+        "L:S_OH_EXT_LT_NOSE": 1,
+        "L:S_OH_EXT_LT_WING": 1
+      },
+      "expected": {
+        "beacon": true,
+        "logoLights": true,
+        "navigationLights": true,
+        "seatBelts": true,
+        "taxiLights": true,
+        "wingLights": true
+      }
+    },
+    {
+      "name": "alternate selector on positions",
+      "values": {
+        "L:S_OH_EXT_LT_BEACON": 1,
+        "L:S_OH_EXT_LT_NAV_LOGO": 2,
+        "L:S_OH_SIGNS": 1,
+        "L:S_OH_EXT_LT_NOSE": 2,
+        "L:S_OH_EXT_LT_WING": 1
+      },
+      "expected": {
+        "beacon": true,
+        "logoLights": true,
+        "navigationLights": true,
+        "seatBelts": true,
+        "taxiLights": true,
+        "wingLights": true
+      }
+    },
+    {
+      "name": "off positions",
+      "values": {
+        "L:S_OH_EXT_LT_BEACON": 0,
+        "L:S_OH_EXT_LT_NAV_LOGO": 0,
+        "L:S_OH_SIGNS": 0,
+        "L:S_OH_EXT_LT_NOSE": 0,
+        "L:S_OH_EXT_LT_WING": 0
+      },
+      "expected": {
+        "beacon": false,
+        "logoLights": false,
+        "navigationLights": false,
+        "seatBelts": false,
+        "taxiLights": false,
+        "wingLights": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+name: Aircraft compatibility
+description: Report missing or incorrect telemetry for a specific aircraft.
+title: "[Aircraft] "
+labels:
+  - aircraft-compatibility
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not upload aircraft files, Cockpit_Behavior.xml, vendor SDK documentation, simulator DLLs, or API credentials. Use the application's sanitized Export Aircraft Diagnostic command.
+  - type: dropdown
+    id: simulator
+    attributes:
+      label: Simulator edition
+      options:
+        - MSFS 2020
+        - MSFS 2024
+    validations:
+      required: true
+  - type: input
+    id: simulator-version
+    attributes:
+      label: Simulator version
+    validations:
+      required: true
+  - type: input
+    id: aircraft
+    attributes:
+      label: Aircraft and developer
+    validations:
+      required: true
+  - type: input
+    id: aircraft-version
+    attributes:
+      label: Aircraft version
+    validations:
+      required: true
+  - type: input
+    id: profile
+    attributes:
+      label: Selected profile and source
+    validations:
+      required: true
+  - type: dropdown
+    id: connection
+    attributes:
+      label: Target-specific library connection test
+      options:
+        - Passed for this simulator
+        - Failed for this simulator
+        - Not run
+    validations:
+      required: true
+  - type: textarea
+    id: standard
+    attributes:
+      label: Universal telemetry result
+      description: State whether generic position, motion, fuel, and standard systems work.
+    validations:
+      required: true
+  - type: textarea
+    id: affected
+    attributes:
+      label: Affected feature and expected value
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include aircraft state and stable steps.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostic
+    attributes:
+      label: Sanitized exported aircraft diagnostic
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I reviewed the diagnostic and did not include credentials, DLLs, proprietary files, or SDK content.
+          required: true

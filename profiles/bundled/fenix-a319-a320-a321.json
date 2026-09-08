@@ -1,0 +1,195 @@
+{
+  "meta": {
+    "id": "cm.fenix.a319-a320-a321",
+    "name": "Fenix A319/A320/A321",
+    "author": "B.Fatih KOZ <https://github.com/FatihKoz>",
+    "license": "BSD-2-Clause",
+    "priority": 200,
+    "simulators": ["msfs20", "msfs24"],
+    "sourceUrl": "https://github.com/phpvms/acars-config/blob/20a81525037fcf920f158b4c063b48f33734a502/src/aircraft/fenix-a320.json",
+    "sourceRevision": "20a81525037fcf920f158b4c063b48f33734a502"
+  },
+  "match": [],
+  "matchGroups": [
+    [
+      { "scope": "title", "operator": "contains", "value": "Fenix", "ignoreCase": true },
+      { "scope": "configPath", "operator": "contains", "value": "FNX_320_CFM_SL", "ignoreCase": true }
+    ],
+    [
+      { "scope": "title", "operator": "contains", "value": "Fenix", "ignoreCase": true },
+      { "scope": "either", "operator": "contains", "value": "A319", "ignoreCase": true }
+    ],
+    [
+      { "scope": "title", "operator": "contains", "value": "Fenix", "ignoreCase": true },
+      { "scope": "either", "operator": "contains", "value": "A320", "ignoreCase": true }
+    ],
+    [
+      { "scope": "title", "operator": "contains", "value": "Fenix", "ignoreCase": true },
+      { "scope": "either", "operator": "contains", "value": "A321", "ignoreCase": true }
+    ]
+  ],
+  "mappings": {
+    "beacon": { "kind": "lVar", "name": "L:S_OH_EXT_LT_BEACON", "unit": "number", "operator": "equals", "compareTo": 1 },
+    "logoLights": { "kind": "lVar", "name": "L:S_OH_EXT_LT_NAV_LOGO", "unit": "number", "operator": "greaterThan", "compareTo": 0 },
+    "navigationLights": { "kind": "lVar", "name": "L:S_OH_EXT_LT_NAV_LOGO", "unit": "number", "operator": "greaterThan", "compareTo": 0 },
+    "seatBelts": { "kind": "lVar", "name": "L:S_OH_SIGNS", "unit": "number", "operator": "equals", "compareTo": 1 },
+    "taxiLights": { "kind": "lVar", "name": "L:S_OH_EXT_LT_NOSE", "unit": "number", "operator": "greaterThan", "compareTo": 0 },
+    "wingLights": { "kind": "lVar", "name": "L:S_OH_EXT_LT_WING", "unit": "number", "operator": "equals", "compareTo": 1 }
+  },
+  "compoundMappings": {
+    "landingLights": {
+      "branches": [
+        {
+          "anyOf": [
+            {
+              "all": [
+                { "kind": "lVar", "name": "L:S_OH_EXT_LT_LANDING_L", "unit": "number", "operator": "equals", "compareTo": 2 },
+                { "kind": "lVar", "name": "L:S_OH_EXT_LT_LANDING_R", "unit": "number", "operator": "equals", "compareTo": 2 }
+              ]
+            }
+          ],
+          "value": true
+        },
+        { "value": false }
+      ]
+    },
+    "strobeLights": {
+      "branches": [
+        {
+          "anyOf": [
+            { "all": [{ "kind": "lVar", "name": "L:S_OH_EXT_LT_STROBE", "unit": "number", "operator": "equals", "compareTo": 1 }] }
+          ],
+          "useFallback": true
+        },
+        {
+          "anyOf": [
+            { "all": [{ "kind": "lVar", "name": "L:S_OH_EXT_LT_STROBE", "unit": "number", "operator": "equals", "compareTo": 2 }] }
+          ],
+          "value": true
+        },
+        { "value": false }
+      ]
+    },
+    "battery": {
+      "branches": [
+        {
+          "anyOf": [
+            {
+              "all": [
+                { "kind": "lVar", "name": "L:S_OH_ELEC_BAT1", "unit": "number", "operator": "equals", "compareTo": 1 },
+                { "kind": "lVar", "name": "L:S_OH_ELEC_BAT2", "unit": "number", "operator": "equals", "compareTo": 1 }
+              ]
+            },
+            { "all": [{ "kind": "lVar", "name": "L:I_OH_ELEC_EXT_PWR_L", "unit": "number", "operator": "equals", "compareTo": 1 }] }
+          ],
+          "value": true
+        },
+        { "value": false }
+      ]
+    },
+    "externalPower": {
+      "branches": [
+        {
+          "anyOf": [
+            { "all": [{ "kind": "lVar", "name": "L:I_OH_ELEC_EXT_PWR_L", "unit": "number", "operator": "equals", "compareTo": 1 }] }
+          ],
+          "value": true
+        },
+        { "value": false }
+      ]
+    },
+    "apu": {
+      "branches": [
+        {
+          "anyOf": [
+            {
+              "all": [
+                { "kind": "lVar", "name": "L:S_OH_ELEC_APU_MASTER", "unit": "number", "operator": "equals", "compareTo": 1 },
+                { "kind": "lVar", "name": "L:I_OH_ELEC_APU_START_U", "unit": "number", "operator": "equals", "compareTo": 1 }
+              ]
+            }
+          ],
+          "value": true
+        },
+        { "value": false }
+      ]
+    },
+    "packs": {
+      "branches": [
+        {
+          "anyOf": [
+            {
+              "all": [
+                { "kind": "lVar", "name": "L:S_OH_PNEUMATIC_PACK_1", "unit": "number", "operator": "equals", "compareTo": 1 },
+                { "kind": "lVar", "name": "L:I_OH_PNEUMATIC_PACK_1_U", "unit": "number", "operator": "equals", "compareTo": 0 }
+              ]
+            },
+            {
+              "all": [
+                { "kind": "lVar", "name": "L:S_OH_PNEUMATIC_PACK_2", "unit": "number", "operator": "equals", "compareTo": 1 },
+                { "kind": "lVar", "name": "L:I_OH_PNEUMATIC_PACK_2_U", "unit": "number", "operator": "equals", "compareTo": 0 }
+              ]
+            }
+          ],
+          "value": true
+        },
+        { "value": false }
+      ]
+    },
+    "doorsClosed": {
+      "branches": [
+        {
+          "anyOf": [
+            {
+              "all": [
+                { "kind": "lVar", "name": "L:Any_Exit_open_L", "unit": "number", "operator": "equals", "compareTo": 0 },
+                { "kind": "lVar", "name": "L:Any_Exit_open_R", "unit": "number", "operator": "equals", "compareTo": 0 }
+              ]
+            }
+          ],
+          "value": true
+        },
+        { "value": false }
+      ]
+    },
+    "antiIce": {
+      "branches": [
+        {
+          "anyOf": [
+            { "all": [{ "kind": "lVar", "name": "L:S_OH_PNEUMATIC_WING_ANTI_ICE", "unit": "number", "operator": "equals", "compareTo": 1 }] },
+            {
+              "all": [
+                { "kind": "lVar", "name": "L:S_OH_PNEUMATIC_ENG1_ANTI_ICE", "unit": "number", "operator": "equals", "compareTo": 1 },
+                { "kind": "lVar", "name": "L:S_OH_PNEUMATIC_ENG2_ANTI_ICE", "unit": "number", "operator": "equals", "compareTo": 1 }
+              ]
+            }
+          ],
+          "value": true
+        },
+        { "value": false }
+      ]
+    },
+    "emergencyLights": {
+      "branches": [
+        {
+          "anyOf": [
+            { "all": [{ "kind": "lVar", "name": "L:S_OH_INT_LT_EMER", "unit": "number", "operator": "equals", "compareTo": 1 }] },
+            { "all": [{ "kind": "lVar", "name": "L:S_OH_INT_LT_EMER", "unit": "number", "operator": "equals", "compareTo": 2 }] }
+          ],
+          "value": true
+        },
+        { "value": false }
+      ]
+    }
+  },
+  "flapLabels": {
+    "0": "UP",
+    "1": "CONF 1",
+    "2": "CONF 1+F",
+    "3": "CONF 2",
+    "4": "CONF 3",
+    "5": "FULL"
+  },
+  "disabled": {},
+  "features": { "readOnlyLVars": true }
+}

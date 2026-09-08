@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "id": "cm.pmdg.737",
+    "name": "PMDG 737",
+    "author": "acars",
+    "license": "BSD-2-Clause",
+    "priority": 200,
+    "simulators": ["msfs20", "msfs24"],
+    "sourceUrl": "https://github.com/phpvms/acars-config/blob/20a81525037fcf920f158b4c063b48f33734a502/src/aircraft/pmdg-737-msfs.json",
+    "sourceRevision": "20a81525037fcf920f158b4c063b48f33734a502"
+  },
+  "match": [],
+  "matchGroups": [
+    [
+      { "scope": "either", "operator": "contains", "value": "PMDG", "ignoreCase": true },
+      { "scope": "either", "operator": "contains", "value": "737", "ignoreCase": true }
+    ]
+  ],
+  "mappings": {
+    "beacon": { "kind": "lVar", "name": "L:switch_124_73X", "unit": "number", "operator": "equals", "compareTo": 100 },
+    "logoLights": { "kind": "lVar", "name": "L:switch_122_73X", "unit": "number", "operator": "equals", "compareTo": 100 },
+    "strobeLights": { "kind": "lVar", "name": "L:switch_123_73X", "unit": "number", "operator": "equals", "compareTo": 0 },
+    "taxiLights": { "kind": "lVar", "name": "L:switch_117_73X", "unit": "number", "operator": "equals", "compareTo": 100 },
+    "wingLights": { "kind": "lVar", "name": "L:switch_125_73X", "unit": "number", "operator": "equals", "compareTo": 100 }
+  },
+  "compoundMappings": {
+    "landingLights": {
+      "branches": [
+        {
+          "anyOf": [
+            {
+              "all": [
+                { "kind": "lVar", "name": "L:switch_113_73X", "unit": "number", "operator": "equals", "compareTo": 100 },
+                { "kind": "lVar", "name": "L:switch_114_73X", "unit": "number", "operator": "equals", "compareTo": 100 }
+              ]
+            }
+          ],
+          "value": true
+        },
+        { "value": false }
+      ]
+    },
+    "navigationLights": {
+      "branches": [
+        {
+          "anyOf": [
+            { "all": [{ "kind": "lVar", "name": "L:switch_123_73X", "unit": "number", "operator": "equals", "compareTo": 0 }] },
+            { "all": [{ "kind": "lVar", "name": "L:switch_123_73X", "unit": "number", "operator": "equals", "compareTo": 100 }] }
+          ],
+          "value": true
+        },
+        { "value": false }
+      ]
+    }
+  },
+  "disabled": {},
+  "features": { "genericTelemetry": true, "readOnlyLVars": true, "pmdgEnhancedAvailable": false }
+}

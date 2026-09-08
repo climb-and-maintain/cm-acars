@@ -1,0 +1,83 @@
+name: Bug report
+description: Report a reproducible application defect.
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Remove credentials and personal data. Do not attach Microsoft or aircraft-vendor DLLs, SDK documents, or proprietary aircraft files. Report exploitable defects privately through SECURITY.md.
+  - type: input
+    id: app-version
+    attributes:
+      label: Application version
+      placeholder: 0.1.0 or commit SHA
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows edition and build
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Startup or installation
+        - Simulator discovery or validation
+        - Simulator connection or telemetry
+        - Aircraft profile
+        - phpVMS
+        - Flight phase or event
+        - Offline queue or recovery
+        - User interface
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: simulator
+    attributes:
+      label: Simulator target
+      options:
+        - Not applicable
+        - MSFS 2020
+        - MSFS 2024
+        - Both, reproduced separately
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Include the starting state and the smallest repeatable sequence.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Sanitized diagnostics
+      description: Paste relevant text or attach a reviewed support bundle. Never attach the selected DLL.
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Safety checks
+      options:
+        - label: I removed API keys, authorization headers, cookies, and personal data.
+          required: true
+        - label: I did not attach Microsoft or aircraft-vendor binaries or proprietary SDK content.
+          required: true

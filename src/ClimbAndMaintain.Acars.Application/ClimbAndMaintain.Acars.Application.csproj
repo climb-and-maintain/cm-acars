@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Application contracts and use-case boundaries for Climb and Maintain ACARS.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../ClimbAndMaintain.Acars.Core/ClimbAndMaintain.Acars.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>ClimbAndMaintain.Acars.SimConnect.Probe</RootNamespace>
+    <Description>Crash-isolated native SimConnect library validation helper.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../ClimbAndMaintain.Acars.SimConnect/ClimbAndMaintain.Acars.SimConnect.csproj" />
+  </ItemGroup>
+</Project>

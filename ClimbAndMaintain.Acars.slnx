@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ClimbAndMaintain.Acars.App/ClimbAndMaintain.Acars.App.csproj" />
+    <Project Path="src/ClimbAndMaintain.Acars.Application/ClimbAndMaintain.Acars.Application.csproj" />
+    <Project Path="src/ClimbAndMaintain.Acars.AircraftProfiles/ClimbAndMaintain.Acars.AircraftProfiles.csproj" />
+    <Project Path="src/ClimbAndMaintain.Acars.Core/ClimbAndMaintain.Acars.Core.csproj" />
+    <Project Path="src/ClimbAndMaintain.Acars.Infrastructure/ClimbAndMaintain.Acars.Infrastructure.csproj" />
+    <Project Path="src/ClimbAndMaintain.Acars.PhpVms/ClimbAndMaintain.Acars.PhpVms.csproj" />
+    <Project Path="src/ClimbAndMaintain.Acars.SimConnect.Probe/ClimbAndMaintain.Acars.SimConnect.Probe.csproj" />
+    <Project Path="src/ClimbAndMaintain.Acars.SimConnect/ClimbAndMaintain.Acars.SimConnect.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ClimbAndMaintain.Acars.AircraftProfiles.Tests/ClimbAndMaintain.Acars.AircraftProfiles.Tests.csproj" />
+    <Project Path="tests/ClimbAndMaintain.Acars.Core.Tests/ClimbAndMaintain.Acars.Core.Tests.csproj" />
+    <Project Path="tests/ClimbAndMaintain.Acars.IntegrationTests/ClimbAndMaintain.Acars.IntegrationTests.csproj" />
+    <Project Path="tests/ClimbAndMaintain.Acars.PhpVms.Tests/ClimbAndMaintain.Acars.PhpVms.Tests.csproj" />
+    <Project Path="tests/ClimbAndMaintain.Acars.SimConnect.Tests/ClimbAndMaintain.Acars.SimConnect.Tests.csproj" />
+    <Project Path="tests/ClimbAndMaintain.Acars.UITests/ClimbAndMaintain.Acars.UITests.csproj" />
+  </Folder>
+</Solution>

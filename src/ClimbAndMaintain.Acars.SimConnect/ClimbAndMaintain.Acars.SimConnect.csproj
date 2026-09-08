@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Runtime-loaded native SimConnect integration for Climb and Maintain ACARS.</Description>
+    <RootNamespace>ClimbAndMaintain.Acars.SimConnect</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../ClimbAndMaintain.Acars.Core/ClimbAndMaintain.Acars.Core.csproj" />
+    <ProjectReference Include="../ClimbAndMaintain.Acars.Application/ClimbAndMaintain.Acars.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>ClimbAndMaintain.Acars.SimConnect.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>

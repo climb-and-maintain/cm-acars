@@ -1,0 +1,54 @@
+{
+  "cases": [
+    {
+      "title": "PMDG 737-800",
+      "configurationPath": "pmdg-aircraft-737/SimObjects/Airplanes/PMDG 737-800/aircraft.cfg",
+      "simulator": "msfs20",
+      "profileId": "cm.pmdg.737",
+      "values": {
+        "L:switch_124_73X": 100,
+        "L:switch_113_73X": 100,
+        "L:switch_114_73X": 100,
+        "L:switch_122_73X": 100,
+        "L:switch_123_73X": 0,
+        "L:switch_117_73X": 100,
+        "L:switch_125_73X": 100
+      },
+      "expected": {
+        "beacon": true,
+        "landingLights": true,
+        "logoLights": true,
+        "navigationLights": true,
+        "strobeLights": true,
+        "taxiLights": true,
+        "wingLights": true
+      }
+    },
+    {
+      "title": "PMDG 777-300ER",
+      "configurationPath": "pmdg-aircraft-77w/SimObjects/Airplanes/PMDG 777-300ER/aircraft.cfg",
+      "simulator": "msfs24",
+      "profileId": "cm.pmdg.777",
+      "values": {
+        "L:switch_114_a": 100,
+        "L:switch_22_a": 100,
+        "L:switch_23_a": 100,
+        "L:switch_24_a": 100,
+        "L:switch_116_a": 100,
+        "L:switch_115_a": 100,
+        "L:switch_122_a": 100,
+        "L:switch_121_a": 100,
+        "L:switch_117_a": 100
+      },
+      "expected": {
+        "beacon": true,
+        "landingLights": true,
+        "logoLights": true,
+        "navigationLights": true,
+        "strobeLights": true,
+        "taxiLights": true,
+        "wingLights": true
+      }
+    }
+  ]
+}

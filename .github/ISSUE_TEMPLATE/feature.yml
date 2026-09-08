@@ -1,0 +1,53 @@
+name: Feature request
+description: Propose a focused, accessible improvement.
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What operational problem or unmet user need should be solved?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe observable behavior, not only an implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: accessibility
+    attributes:
+      label: Accessibility impact
+      description: Explain keyboard, screen-reader, contrast, scaling, or cognitive-load implications.
+    validations:
+      required: true
+  - type: dropdown
+    id: boundary
+    attributes:
+      label: Likely architectural boundary
+      options:
+        - Simulator-neutral core
+        - Runtime SimConnect adapter
+        - Aircraft profile
+        - phpVMS backend
+        - Storage or recovery
+        - WPF presentation
+        - Installer or release engineering
+        - Unsure
+    validations:
+      required: true
+  - type: checkboxes
+    id: policy
+    attributes:
+      label: Third-party policy
+      options:
+        - label: This request does not require bundling or downloading Microsoft or aircraft-vendor binaries.
+          required: true

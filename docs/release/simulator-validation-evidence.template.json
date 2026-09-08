@@ -1,0 +1,170 @@
+{
+  "$schema": "../simulator-validation-evidence.schema.json",
+  "schemaVersion": "1.0",
+  "releaseVersion": "0.0.0",
+  "applicationCommit": "0000000000000000000000000000000000000000",
+  "candidateWorkflow": {
+    "workflowRunId": "0",
+    "artifactName": "REPLACE-WITH-IMMUTABLE-CANDIDATE-ARTIFACT-NAME"
+  },
+  "artifact": {
+    "fileName": "REPLACE-WITH-EXACT-RELEASE-CANDIDATE.exe",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "testedAtUtc": "1970-01-01T00:00:00Z",
+  "tester": {
+    "identifier": "REPLACE",
+    "notes": ""
+  },
+  "host": {
+    "windowsEdition": "REPLACE",
+    "windowsBuild": "REPLACE",
+    "architecture": "x64"
+  },
+  "distributionPolicy": {
+    "microsoftBinaryBundled": false,
+    "microsoftBinaryDownloadedByApplication": false,
+    "managedWrapperReferenced": false
+  },
+  "simulators": [
+    {
+      "target": "msfs20",
+      "simulatorVersion": "REPLACE",
+      "library": {
+        "fileName": "REPLACE",
+        "fileVersion": "REPLACE",
+        "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "sourceDescription": "REPLACE with a non-sensitive description of the Microsoft-provided source",
+        "obtainedByUser": true,
+        "bundledByApplication": false,
+        "downloadedByApplication": false
+      },
+      "workflow": {
+        "automaticDiscovery": {
+          "result": "not-run",
+          "notes": ""
+        },
+        "manualSelection": {
+          "result": "not-run",
+          "notes": ""
+        },
+        "structuralValidation": {
+          "result": "not-run",
+          "notes": ""
+        },
+        "connectionTest": {
+          "result": "not-run",
+          "notes": ""
+        },
+        "reportedTarget": "msfs20",
+        "enabledWithoutRecompile": true,
+        "enabledWithoutReinstall": true,
+        "applicationRestartRequired": false
+      },
+      "telemetry": {
+        "aircraftIdentity": {
+          "result": "not-run",
+          "notes": ""
+        },
+        "standardSimVars": {
+          "result": "not-run",
+          "notes": ""
+        },
+        "readOnlyLVars": {
+          "result": "not-run",
+          "notes": ""
+        }
+      },
+      "recovery": {
+        "aircraftReload": {
+          "result": "not-run",
+          "notes": ""
+        },
+        "simulatorRestart": {
+          "result": "not-run",
+          "notes": ""
+        }
+      },
+      "degradedMode": {
+        "result": "not-run",
+        "applicationLaunched": true,
+        "configurationAvailable": true,
+        "diagnosticsAvailable": true,
+        "phpVmsSetupAvailable": true,
+        "replayAvailable": true,
+        "notes": ""
+      },
+      "issues": []
+    },
+    {
+      "target": "msfs24",
+      "simulatorVersion": "REPLACE",
+      "library": {
+        "fileName": "REPLACE",
+        "fileVersion": "REPLACE",
+        "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "sourceDescription": "REPLACE with a non-sensitive description of the Microsoft-provided source",
+        "obtainedByUser": true,
+        "bundledByApplication": false,
+        "downloadedByApplication": false
+      },
+      "workflow": {
+        "automaticDiscovery": {
+          "result": "not-run",
+          "notes": ""
+        },
+        "manualSelection": {
+          "result": "not-run",
+          "notes": ""
+        },
+        "structuralValidation": {
+          "result": "not-run",
+          "notes": ""
+        },
+        "connectionTest": {
+          "result": "not-run",
+          "notes": ""
+        },
+        "reportedTarget": "msfs24",
+        "enabledWithoutRecompile": true,
+        "enabledWithoutReinstall": true,
+        "applicationRestartRequired": false
+      },
+      "telemetry": {
+        "aircraftIdentity": {
+          "result": "not-run",
+          "notes": ""
+        },
+        "standardSimVars": {
+          "result": "not-run",
+          "notes": ""
+        },
+        "readOnlyLVars": {
+          "result": "not-run",
+          "notes": ""
+        }
+      },
+      "recovery": {
+        "aircraftReload": {
+          "result": "not-run",
+          "notes": ""
+        },
+        "simulatorRestart": {
+          "result": "not-run",
+          "notes": ""
+        }
+      },
+      "degradedMode": {
+        "result": "not-run",
+        "applicationLaunched": true,
+        "configurationAvailable": true,
+        "diagnosticsAvailable": true,
+        "phpVmsSetupAvailable": true,
+        "replayAvailable": true,
+        "notes": ""
+      },
+      "issues": []
+    }
+  ],
+  "attestation": "REPLACE: I tested the exact identified artifact and recorded the results accurately without committing or redistributing either simulator library."
+}

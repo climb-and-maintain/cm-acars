@@ -1,0 +1,60 @@
+name: Accessibility issue
+description: Report a keyboard, screen-reader, contrast, scaling, focus, or text problem.
+title: "[Accessibility] "
+labels:
+  - accessibility
+body:
+  - type: input
+    id: app-version
+    attributes:
+      label: Application version
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows edition and build
+    validations:
+      required: true
+  - type: checkboxes
+    id: modes
+    attributes:
+      label: Affected mode
+      options:
+        - label: Keyboard only
+        - label: Narrator or another screen reader
+        - label: Windows High Contrast
+        - label: Increased text size
+        - label: 150% or 200% display scaling
+        - label: Light or Dark theme
+  - type: input
+    id: assistive-tech
+    attributes:
+      label: Assistive technology and version
+      description: Enter Not applicable if none.
+    validations:
+      required: true
+  - type: textarea
+    id: location
+    attributes:
+      label: Page, control, and starting focus
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected accessible behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true

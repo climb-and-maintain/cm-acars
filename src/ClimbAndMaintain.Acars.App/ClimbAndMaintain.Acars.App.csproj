@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <ApplicationIcon>../../assets/branding/ClimbAndMaintain.Acars.ico</ApplicationIcon>
+    <Description>Accessible Windows ACARS client for Microsoft Flight Simulator and phpVMS.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="NLog.Extensions.Logging" />
+    <PackageReference Include="System.Waf.Wpf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../ClimbAndMaintain.Acars.Application/ClimbAndMaintain.Acars.Application.csproj" />
+    <ProjectReference Include="../ClimbAndMaintain.Acars.AircraftProfiles/ClimbAndMaintain.Acars.AircraftProfiles.csproj" />
+    <ProjectReference Include="../ClimbAndMaintain.Acars.Core/ClimbAndMaintain.Acars.Core.csproj" />
+    <ProjectReference Include="../ClimbAndMaintain.Acars.Infrastructure/ClimbAndMaintain.Acars.Infrastructure.csproj" />
+    <ProjectReference Include="../ClimbAndMaintain.Acars.PhpVms/ClimbAndMaintain.Acars.PhpVms.csproj" />
+    <ProjectReference Include="../ClimbAndMaintain.Acars.SimConnect/ClimbAndMaintain.Acars.SimConnect.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="../../branding.json" Link="branding.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
+    <DotNetRuntimePackDirectory>$(NuGetPackageRoot)microsoft.netcore.app.runtime.win-x64/$(RuntimeFrameworkVersion)/</DotNetRuntimePackDirectory>
+    <WindowsDesktopRuntimePackDirectory>$(NuGetPackageRoot)microsoft.windowsdesktop.app.runtime.win-x64/$(RuntimeFrameworkVersion)/</WindowsDesktopRuntimePackDirectory>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
+    <Content Include="$(DotNetRuntimePackDirectory)LICENSE.TXT" Link="DOTNET_RUNTIME_LICENSE.txt">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="$(DotNetRuntimePackDirectory)THIRD-PARTY-NOTICES.TXT" Link="DOTNET_RUNTIME_THIRD_PARTY_NOTICES.txt">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="$(WindowsDesktopRuntimePackDirectory)LICENSE" Link="WINDOWS_DESKTOP_RUNTIME_LICENSE.txt">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <Target Name="ValidateSelfContainedRuntimeNotices"
+          BeforeTargets="ComputeFilesToPublish"
+          Condition="'$(SelfContained)' == 'true' and '$(RuntimeIdentifier)' == 'win-x64'">
+    <Error Condition="!Exists('$(DotNetRuntimePackDirectory)LICENSE.TXT')"
+           Text="The pinned .NET runtime license was not found in the restored runtime pack." />
+    <Error Condition="!Exists('$(DotNetRuntimePackDirectory)THIRD-PARTY-NOTICES.TXT')"
+           Text="The pinned .NET runtime third-party notices were not found in the restored runtime pack." />
+    <Error Condition="!Exists('$(WindowsDesktopRuntimePackDirectory)LICENSE')"
+           Text="The pinned Windows Desktop runtime license was not found in the restored runtime pack." />
+  </Target>
+</Project>

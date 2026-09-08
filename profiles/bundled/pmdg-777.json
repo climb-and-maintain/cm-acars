@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "id": "cm.pmdg.777",
+    "name": "PMDG 777",
+    "author": "acars",
+    "license": "BSD-2-Clause",
+    "priority": 200,
+    "simulators": ["msfs20", "msfs24"],
+    "sourceUrl": "https://github.com/phpvms/acars-config/blob/20a81525037fcf920f158b4c063b48f33734a502/src/aircraft/pmdg-777-msfs.json",
+    "sourceRevision": "20a81525037fcf920f158b4c063b48f33734a502"
+  },
+  "match": [],
+  "matchGroups": [
+    [
+      { "scope": "either", "operator": "contains", "value": "PMDG", "ignoreCase": true },
+      { "scope": "either", "operator": "contains", "value": "777", "ignoreCase": true }
+    ]
+  ],
+  "mappings": {
+    "beacon": { "kind": "lVar", "name": "L:switch_114_a", "unit": "number", "operator": "equals", "compareTo": 100 },
+    "logoLights": { "kind": "lVar", "name": "L:switch_116_a", "unit": "number", "operator": "equals", "compareTo": 100 },
+    "navigationLights": { "kind": "lVar", "name": "L:switch_115_a", "unit": "number", "operator": "equals", "compareTo": 100 },
+    "strobeLights": { "kind": "lVar", "name": "L:switch_122_a", "unit": "number", "operator": "equals", "compareTo": 100 },
+    "taxiLights": { "kind": "lVar", "name": "L:switch_121_a", "unit": "number", "operator": "equals", "compareTo": 100 },
+    "wingLights": { "kind": "lVar", "name": "L:switch_117_a", "unit": "number", "operator": "equals", "compareTo": 100 }
+  },
+  "compoundMappings": {
+    "landingLights": {
+      "branches": [
+        {
+          "anyOf": [
+            {
+              "all": [
+                { "kind": "lVar", "name": "L:switch_22_a", "unit": "number", "operator": "equals", "compareTo": 100 },
+                { "kind": "lVar", "name": "L:switch_23_a", "unit": "number", "operator": "equals", "compareTo": 100 },
+                { "kind": "lVar", "name": "L:switch_24_a", "unit": "number", "operator": "equals", "compareTo": 100 }
+              ]
+            }
+          ],
+          "value": true
+        },
+        { "value": false }
+      ]
+    }
+  },
+  "disabled": {},
+  "features": { "genericTelemetry": true, "readOnlyLVars": true, "pmdgEnhancedAvailable": false }
+}

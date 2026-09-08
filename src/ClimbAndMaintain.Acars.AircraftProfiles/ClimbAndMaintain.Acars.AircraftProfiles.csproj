@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>ClimbAndMaintain.Acars.AircraftProfiles</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\profiles\bundled\**\*.json" Link="Profiles\bundled\%(RecursiveDir)%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\..\profiles\upstream\**\*.json" Link="Profiles\upstream\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClimbAndMaintain.Acars.Core\ClimbAndMaintain.Acars.Core.csproj" />
+  </ItemGroup>
+</Project>

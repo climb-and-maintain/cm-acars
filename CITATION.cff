@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use or derive work from this software, please cite it using this metadata."
+title: "Climb and Maintain ACARS"
+type: software
+authors:
+  - name: "Climb and Maintain, SPC"
+version: "0.1.0-dev"
+license: Apache-2.0
+repository-code: "https://github.com/climb-and-maintain/cm-acars"
+url: "https://github.com/climb-and-maintain/cm-acars"
+abstract: >-
+  An accessible, durable, open-source Windows ACARS client for Microsoft
+  Flight Simulator 2020 and 2024 and phpVMS, with profile-driven aircraft
+  telemetry and a runtime user-supplied SimConnect-library workflow.
+keywords:
+  - ACARS
+  - flight simulation
+  - Microsoft Flight Simulator
+  - phpVMS
+  - accessibility

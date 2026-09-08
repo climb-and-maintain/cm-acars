@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <OutputType>Exe</OutputType>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ClimbAndMaintain.Acars.AircraftProfiles\ClimbAndMaintain.Acars.AircraftProfiles.csproj" />
+    <ProjectReference Include="..\..\src\ClimbAndMaintain.Acars.Core\ClimbAndMaintain.Acars.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\tests\fixtures\profiles\fenix-a319-a320-a321.json"
+          Link="Fixtures\fenix-a319-a320-a321.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\tests\fixtures\profiles\pmdg-lights.json"
+          Link="Fixtures\pmdg-lights.json"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

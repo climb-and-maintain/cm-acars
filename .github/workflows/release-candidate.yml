@@ -1,0 +1,101 @@
+name: Release candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Semantic version without the v prefix
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  CM_ACARS_APP_PATH: "${{ github.workspace }}\\src\\ClimbAndMaintain.Acars.App\\bin\\Release\\net10.0-windows\\ClimbAndMaintain.Acars.App.exe"
+  CM_ACARS_RUN_UI_TESTS: "1"
+  CI: "true"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+  RELEASE_VERSION: ${{ inputs.version }}
+
+jobs:
+  candidate:
+    name: Build immutable candidate
+    runs-on: windows-latest
+    timeout-minutes: 45
+    outputs:
+      artifact-name: ${{ steps.metadata.outputs.artifact_name }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Install .NET 10 SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 10.0.400
+          architecture: x64
+
+      - name: Validate candidate metadata
+        id: metadata
+        shell: pwsh
+        run: |
+          if ($env:RELEASE_VERSION -notmatch '^[0-9]+[.][0-9]+[.][0-9]+(?:-[0-9A-Za-z.-]+)?$') {
+            throw "Version must be semantic version text without a v prefix."
+          }
+          "artifact_name=release-candidate-v$($env:RELEASE_VERSION)-$($env:GITHUB_SHA)" >> $env:GITHUB_OUTPUT
+
+      - name: Validate versioned changelog notes
+        shell: pwsh
+        run: |
+          $notesPath = Join-Path $env:RUNNER_TEMP "release-notes-$env:RELEASE_VERSION.md"
+          ./scripts/Get-ChangelogReleaseNotes.ps1 -Version $env:RELEASE_VERSION -OutputPath $notesPath
+
+      - name: Install checksum-pinned NSIS
+        shell: pwsh
+        run: |
+          $packagePath = Join-Path $env:RUNNER_TEMP 'nsis.install.3.12.0.nupkg'
+          Invoke-WebRequest `
+            -Uri 'https://community.chocolatey.org/api/v2/package/nsis.install/3.12.0' `
+            -OutFile $packagePath
+          $expectedPackageHash = '4a1bbf9987e5b9b6bda4c2433af62bb79f2d9d3bd67b392f29a069ecda8c5f64'
+          $actualPackageHash = (Get-FileHash -LiteralPath $packagePath -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actualPackageHash -ne $expectedPackageHash) {
+            throw "The NSIS Chocolatey package hash did not match the reviewed release-toolchain input."
+          }
+          choco install nsis.install --version=3.12.0 --source="$env:RUNNER_TEMP" --yes --no-progress
+          if ($LASTEXITCODE -ne 0) { throw "NSIS installation failed." }
+
+      - name: Audit candidate source distribution policy
+        shell: pwsh
+        run: ./scripts/Assert-NoMicrosoftSimConnect.ps1 -Path . -InspectBuildMetadata
+
+      - name: Build, test, audit, and package
+        shell: pwsh
+        run: ./scripts/Build-Release.ps1 -Version $env:RELEASE_VERSION -CandidateBuild
+
+      - name: Upload immutable candidate
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ${{ steps.metadata.outputs.artifact_name }}
+          path: |
+            artifacts/release/ClimbAndMaintain-ACARS-Setup-x64.exe
+            artifacts/release/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Record evidence coordinates
+        shell: pwsh
+        run: |
+          @"
+          ## Candidate ready
+
+          - Workflow run ID: $env:GITHUB_RUN_ID
+          - Artifact: ${{ steps.metadata.outputs.artifact_name }}
+          - Source commit: $env:GITHUB_SHA
+          - Version: $env:RELEASE_VERSION
+
+          Download this exact artifact for both live simulator tests. Do not rebuild it.
+          "@ >> $env:GITHUB_STEP_SUMMARY

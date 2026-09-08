@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <OutputType>Exe</OutputType>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/ClimbAndMaintain.Acars.Application/ClimbAndMaintain.Acars.Application.csproj" />
+    <ProjectReference Include="../../src/ClimbAndMaintain.Acars.Core/ClimbAndMaintain.Acars.Core.csproj" />
+    <ProjectReference Include="../../src/ClimbAndMaintain.Acars.Infrastructure/ClimbAndMaintain.Acars.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../fixtures/**/*.jsonl" Link="fixtures/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

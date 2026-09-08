@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/climb-and-maintain/cm-acars/profiles/schema/profile.schema.json",
+  "title": "Climb and Maintain ACARS aircraft profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["meta", "match", "mappings", "disabled", "features"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "author", "license", "priority", "simulators"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+        "name": { "type": "string", "minLength": 1 },
+        "author": { "type": "string", "minLength": 1 },
+        "license": { "type": "string", "minLength": 1 },
+        "priority": { "type": "integer", "minimum": -10000, "maximum": 10000 },
+        "simulators": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["msfs", "msfs20", "msfs24"] } },
+        "sourceUrl": { "type": ["string", "null"] },
+        "sourceRevision": { "type": ["string", "null"] }
+      }
+    },
+    "match": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["scope", "operator", "value"],
+        "properties": {
+          "scope": { "enum": ["title", "configPath", "either"] },
+          "operator": { "enum": ["equals", "notEquals", "contains"] },
+          "value": { "type": "string", "minLength": 1 },
+          "ignoreCase": { "type": "boolean" }
+        }
+      }
+    },
+    "matchGroups": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 16,
+        "items": { "$ref": "#/$defs/matchRule" }
+      }
+    },
+    "mappings": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/telemetryRule" }
+    },
+    "compoundMappings": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/compoundTelemetryRule" }
+    },
+    "flapLabels": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[0-9]+$" },
+      "additionalProperties": { "type": "string", "minLength": 1, "maxLength": 32 }
+    },
+    "disabled": { "type": "object", "additionalProperties": { "type": "boolean" } },
+    "features": { "type": "object", "additionalProperties": { "type": "boolean" } }
+  },
+  "$defs": {
+    "matchRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope", "operator", "value"],
+      "properties": {
+        "scope": { "enum": ["title", "configPath", "either"] },
+        "operator": { "enum": ["equals", "notEquals", "contains"] },
+        "value": { "type": "string", "minLength": 1 },
+        "ignoreCase": { "type": "boolean" }
+      }
+    },
+    "telemetryRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name"],
+      "properties": {
+        "kind": { "enum": ["simVar", "lVar"] },
+        "name": { "type": "string", "minLength": 1 },
+        "unit": { "type": ["string", "null"] },
+        "operator": { "enum": ["equals", "notEquals", "greaterThan", "greaterThanOrEqual", "lessThan", "lessThanOrEqual"] },
+        "compareTo": { "type": "number" },
+        "scale": { "type": ["number", "null"] },
+        "offset": { "type": ["number", "null"] }
+      }
+    },
+    "telemetryCondition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name"],
+      "properties": {
+        "kind": { "enum": ["simVar", "lVar"] },
+        "name": { "type": "string", "minLength": 1 },
+        "unit": { "type": ["string", "null"] },
+        "operator": { "enum": ["equals", "notEquals", "greaterThan", "greaterThanOrEqual", "lessThan", "lessThanOrEqual"] },
+        "compareTo": { "type": "number" }
+      }
+    },
+    "conditionSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["all"],
+      "properties": {
+        "all": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "items": { "$ref": "#/$defs/telemetryCondition" }
+        }
+      }
+    },
+    "compoundBranch": {
+      "type": "object",
+      "additionalProperties": false,
+      "oneOf": [
+        { "required": ["value"], "not": { "required": ["useFallback"] } },
+        { "required": ["useFallback"], "not": { "required": ["value"] } }
+      ],
+      "properties": {
+        "anyOf": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "items": { "$ref": "#/$defs/conditionSet" }
+        },
+        "value": { "type": "boolean" },
+        "useFallback": { "const": true }
+      }
+    },
+    "compoundTelemetryRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["branches"],
+      "properties": {
+        "branches": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": { "$ref": "#/$defs/compoundBranch" }
+        }
+      }
+    }
+  }
+}

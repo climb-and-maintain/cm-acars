@@ -1,0 +1,15 @@
+Climb and Maintain ACARS
+Copyright 2026 Climb and Maintain, SPC
+
+This product includes software developed by Climb and Maintain, SPC and is
+licensed under the Apache License, Version 2.0.
+
+Portions of bundled aircraft-profile data may be adapted from the phpVMS
+acars-config project under the BSD 2-Clause License. Original author and source
+metadata must remain with each imported profile. See THIRD_PARTY_NOTICES.md.
+
+Microsoft SimConnect binaries are not part of this product. In particular,
+neither SimConnect.dll nor Microsoft.FlightSimulator.SimConnect.dll is bundled,
+vendored, or downloaded by this project. Users may configure a compatible
+library they obtained independently from a Microsoft-provided source they are
+entitled to use.

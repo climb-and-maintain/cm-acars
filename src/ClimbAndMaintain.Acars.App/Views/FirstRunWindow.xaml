@@ -1,0 +1,206 @@
+<Window x:Class="ClimbAndMaintain.Acars.App.Views.FirstRunWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:behaviors="clr-namespace:ClimbAndMaintain.Acars.App.Behaviors"
+        Title="{Binding Branding.ProductName, StringFormat=Set up {0}}"
+        Width="840"
+        Height="680"
+        MinWidth="720"
+        MinHeight="560"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        AutomationProperties.Name="ACARS first-run setup"
+        AutomationProperties.AutomationId="FirstRun.Window">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <Border Padding="24,18" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Right"
+                   Margin="18,5,0,0"
+                   Text="{Binding ProgressText}"
+                   AutomationProperties.Name="Setup progress" />
+        <TextBlock FontSize="22" FontWeight="SemiBold" Text="First-run setup" />
+      </DockPanel>
+    </Border>
+
+    <ScrollViewer Grid.Row="1" Padding="30" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+      <Grid>
+        <StackPanel Visibility="{Binding IsWelcomeStep, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    AutomationProperties.Name="Welcome setup page">
+          <TextBlock Style="{StaticResource PageTitleStyle}" Text="Welcome" />
+          <TextBlock FontSize="17" Text="Climb and Maintain ACARS tracks flights for phpVMS using live Microsoft Flight Simulator telemetry or deterministic recorded telemetry." />
+          <TextBlock Margin="0,18,0,0" Text="The application does not contain, download, or redistribute Microsoft SimConnect libraries. If live simulator support is not ready, configuration, diagnostics, phpVMS setup, and replay mode continue to work." />
+          <TextBlock Margin="0,18,0,0" Style="{StaticResource MutedTextStyle}" Text="All setup choices remain editable from Settings." />
+        </StackPanel>
+
+        <StackPanel Visibility="{Binding IsServerStep, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    AutomationProperties.Name="phpVMS server setup page">
+          <TextBlock Style="{StaticResource PageTitleStyle}" Text="phpVMS site" />
+          <TextBlock Margin="0,0,0,16" Text="Enter the base URL of your airline's phpVMS site. HTTPS is required by default." />
+          <Label Target="{Binding ElementName=WizardServerBox}" Content="phpVMS site URL" />
+          <TextBox x:Name="WizardServerBox"
+                   Text="{Binding PhpVms.BaseUrl, UpdateSourceTrigger=PropertyChanged}"
+                   AutomationProperties.Name="phpVMS site URL"
+                   AutomationProperties.AutomationId="FirstRun.PhpVmsUrl" />
+          <CheckBox Margin="0,14,0,0"
+                    IsChecked="{Binding PhpVms.AllowInsecureLocalServer}"
+                    Content="Developer only: allow HTTP for a local server"
+                    AutomationProperties.Name="Allow insecure HTTP for local development" />
+        </StackPanel>
+
+        <StackPanel Visibility="{Binding IsCredentialStep, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    AutomationProperties.Name="phpVMS credential setup page">
+          <TextBlock Style="{StaticResource PageTitleStyle}" Text="phpVMS API key" />
+          <TextBlock Margin="0,0,0,16" Text="The key is stored with Windows user-scoped encryption. It is never written to normal settings, logs, diagnostics, or support bundles." />
+          <Label Target="{Binding ElementName=WizardApiKeyBox}" Content="API key" />
+          <PasswordBox x:Name="WizardApiKeyBox"
+                       behaviors:PasswordBoxBinding.BoundPassword="{Binding PhpVms.ApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                       AutomationProperties.Name="phpVMS API key"
+                       AutomationProperties.AutomationId="FirstRun.ApiKey" />
+          <Button Margin="0,16,0,0"
+                  HorizontalAlignment="Left"
+                  Command="{Binding PhpVms.SaveCommand}"
+                  Content="Protect and save API key"
+                  AutomationProperties.Name="Protect and save phpVMS API key" />
+          <TextBlock Margin="0,10,0,0" Text="{Binding PhpVms.Status}" AutomationProperties.LiveSetting="Polite" />
+        </StackPanel>
+
+        <StackPanel Visibility="{Binding IsConnectionStep, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    AutomationProperties.Name="phpVMS connection test setup page">
+          <TextBlock Style="{StaticResource PageTitleStyle}" Text="Test phpVMS" />
+          <TextBlock Margin="0,0,0,16" Text="Test the server status endpoint and authenticated pilot endpoint before continuing." />
+          <Button HorizontalAlignment="Left"
+                  Command="{Binding PhpVms.TestCommand}"
+                  Content="Test connection and authentication"
+                  AutomationProperties.Name="Test phpVMS connection and authenticated pilot"
+                  AutomationProperties.AutomationId="FirstRun.TestPhpVms" />
+          <TextBlock Margin="0,10,0,0"
+                     Style="{StaticResource StatusTextStyle}"
+                     Text="{Binding PhpVms.Status}"
+                     AutomationProperties.Name="phpVMS test result"
+                     AutomationProperties.LiveSetting="Assertive" />
+          <TextBlock Margin="0,6,0,0"
+                     Text="{Binding PhpVms.PilotStatus}"
+                     AutomationProperties.Name="Authenticated phpVMS pilot result" />
+        </StackPanel>
+
+        <StackPanel Visibility="{Binding IsSimulatorStep, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    AutomationProperties.Name="Simulator prerequisite setup page">
+          <TextBlock Style="{StaticResource PageTitleStyle}" Text="Simulator libraries" />
+          <TextBlock Margin="0,0,0,16" Text="MSFS 2020 and MSFS 2024 are verified independently. A library is never assumed compatible merely because its file name looks familiar." />
+
+          <GroupBox Header="MSFS 2020">
+            <StackPanel>
+              <Label Target="{Binding ElementName=Wizard2020Path}" Content="Native library path" />
+              <DockPanel>
+                <Button DockPanel.Dock="Right" Command="{Binding Simulator.Browse2020Command}" Content="Browse…" AutomationProperties.Name="Browse for MSFS 2020 library" />
+                <TextBox x:Name="Wizard2020Path" Margin="0,0,8,8" Text="{Binding Simulator.Msfs2020LibraryPath, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="MSFS 2020 library path" />
+              </DockPanel>
+              <TextBlock Margin="0,0,0,8"
+                         Style="{StaticResource MutedTextStyle}"
+                         Text="Security: Test and Connect load native code. Use only a Microsoft-provided library you trust."
+                         AutomationProperties.Name="Security warning for loading the selected MSFS 2020 native library." />
+              <WrapPanel>
+                <Button Command="{Binding Simulator.Validate2020Command}" Content="Validate file" AutomationProperties.Name="Validate MSFS 2020 library" />
+                <Button Command="{Binding Simulator.Test2020Command}" Content="Test with MSFS 2020" AutomationProperties.Name="Test library with MSFS 2020" />
+                <Button Command="{Binding Simulator.Connect2020Command}"
+                        Content="Connect live"
+                        AutomationProperties.Name="Connect live telemetry to MSFS 2020 during first-run setup"
+                        AutomationProperties.AutomationId="FirstRun.Connect2020" />
+              </WrapPanel>
+              <TextBlock Text="{Binding Simulator.Msfs2020Status}" AutomationProperties.LiveSetting="Polite" />
+            </StackPanel>
+          </GroupBox>
+
+          <GroupBox Header="MSFS 2024">
+            <StackPanel>
+              <Label Target="{Binding ElementName=Wizard2024Path}" Content="Native library path" />
+              <DockPanel>
+                <Button DockPanel.Dock="Right" Command="{Binding Simulator.Browse2024Command}" Content="Browse…" AutomationProperties.Name="Browse for MSFS 2024 library" />
+                <TextBox x:Name="Wizard2024Path" Margin="0,0,8,8" Text="{Binding Simulator.Msfs2024LibraryPath, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="MSFS 2024 library path" />
+              </DockPanel>
+              <TextBlock Margin="0,0,0,8"
+                         Style="{StaticResource MutedTextStyle}"
+                         Text="Security: Test and Connect load native code. Use only a Microsoft-provided library you trust."
+                         AutomationProperties.Name="Security warning for loading the selected MSFS 2024 native library." />
+              <WrapPanel>
+                <Button Command="{Binding Simulator.Validate2024Command}" Content="Validate file" AutomationProperties.Name="Validate MSFS 2024 library" />
+                <Button Command="{Binding Simulator.Test2024Command}" Content="Test with MSFS 2024" AutomationProperties.Name="Test library with MSFS 2024" />
+                <Button Command="{Binding Simulator.Connect2024Command}"
+                        Content="Connect live"
+                        AutomationProperties.Name="Connect live telemetry to MSFS 2024 during first-run setup"
+                        AutomationProperties.AutomationId="FirstRun.Connect2024" />
+                <Button Command="{Binding Simulator.SaveSelectionsCommand}" Content="Save selections" AutomationProperties.Name="Save simulator library selections" />
+              </WrapPanel>
+              <TextBlock Text="{Binding Simulator.Msfs2024Status}" AutomationProperties.LiveSetting="Polite" />
+            </StackPanel>
+          </GroupBox>
+          <TextBlock Margin="0,10,0,0"
+                     Style="{StaticResource StatusTextStyle}"
+                     Text="{Binding Simulator.LiveConnectionStatus}"
+                     AutomationProperties.Name="First-run live simulator connection status"
+                     AutomationProperties.LiveSetting="Polite" />
+          <TextBlock Text="{Binding Simulator.LiveProfileStatus}"
+                     AutomationProperties.Name="First-run aircraft profile status" />
+        </StackPanel>
+
+        <StackPanel Visibility="{Binding IsAppearanceStep, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    AutomationProperties.Name="Appearance and accessibility setup page">
+          <TextBlock Style="{StaticResource PageTitleStyle}" Text="Appearance and accessibility" />
+          <TextBlock Margin="0,0,0,16" Text="Choose an appearance. Windows High Contrast always takes precedence, and the application can be used with keyboard navigation and screen readers." />
+          <WrapPanel>
+            <Button Command="{Binding Appearance.UseSystemThemeCommand}" Content="Use system" AutomationProperties.Name="Use system appearance" />
+            <Button Command="{Binding Appearance.UseLightThemeCommand}" Content="Use light" AutomationProperties.Name="Use light appearance" />
+            <Button Command="{Binding Appearance.UseDarkThemeCommand}" Content="Use dark" AutomationProperties.Name="Use dark appearance" />
+          </WrapPanel>
+          <TextBlock Margin="0,10,0,0" Text="{Binding Appearance.AppearanceStatus}" AutomationProperties.LiveSetting="Polite" />
+        </StackPanel>
+
+        <StackPanel Visibility="{Binding IsReadyStep, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    AutomationProperties.Name="Ready setup page">
+          <TextBlock Style="{StaticResource PageTitleStyle}" Text="Ready" />
+          <TextBlock FontSize="17" Text="Setup is complete enough to begin. You can use replay immediately and return to Settings or Diagnostics for anything you skipped." />
+          <TextBlock Margin="0,18,0,0" Text="Live simulator support becomes available as soon as Connect live validates a compatible user-supplied library and confirms the correct simulator; the separate connection test records release evidence. No recompilation, reinstall, or app restart is needed." />
+        </StackPanel>
+      </Grid>
+    </ScrollViewer>
+
+    <TextBlock Grid.Row="2"
+               Margin="24,4"
+               Text="{Binding Status}"
+               AutomationProperties.Name="Setup status"
+               AutomationProperties.LiveSetting="Polite" />
+
+    <Border Grid.Row="3" Padding="20,14" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0">
+      <DockPanel>
+        <Button DockPanel.Dock="Left"
+                Command="{Binding SetUpLaterCommand}"
+                Content="Set up later"
+                AutomationProperties.Name="Close setup and configure later"
+                AutomationProperties.AutomationId="FirstRun.Later" />
+        <WrapPanel HorizontalAlignment="Right">
+          <Button Command="{Binding BackCommand}"
+                  Content="Back"
+                  AutomationProperties.Name="Previous setup step"
+                  AutomationProperties.AutomationId="FirstRun.Back" />
+          <Button Command="{Binding NextCommand}"
+                  Content="Next"
+                  IsDefault="True"
+                  AutomationProperties.Name="Next setup step"
+                  AutomationProperties.AutomationId="FirstRun.Next" />
+          <Button Command="{Binding FinishCommand}"
+                  Content="Finish"
+                  IsDefault="True"
+                  AutomationProperties.Name="Finish first-run setup"
+                  AutomationProperties.AutomationId="FirstRun.Finish" />
+        </WrapPanel>
+      </DockPanel>
+    </Border>
+  </Grid>
+</Window>

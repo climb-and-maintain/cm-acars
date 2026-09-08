@@ -1,0 +1,156 @@
+name: Publish release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  publish:
+    name: Validate evidence and publish tested candidate
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Audit tagged source distribution policy
+        shell: pwsh
+        run: ./scripts/Assert-NoMicrosoftSimConnect.ps1 -Path . -InspectBuildMetadata
+
+      - name: Resolve and validate evidence
+        id: evidence
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = $env:GITHUB_REF_NAME -replace '^v', ''
+          if ($version -notmatch '^[0-9]+[.][0-9]+[.][0-9]+(?:-[0-9A-Za-z.-]+)?$') {
+            throw "Release tag must be vMAJOR.MINOR.PATCH."
+          }
+
+          $evidencePath = "docs/release/evidence/v$version.json"
+          ./scripts/Test-SimulatorValidationEvidence.ps1 -Path $evidencePath -RequireComplete
+          $evidence = Get-Content -LiteralPath $evidencePath -Raw | ConvertFrom-Json -Depth 100
+
+          if ($evidence.releaseVersion -ne $version) {
+            throw "Evidence version does not match tag version."
+          }
+          if ($evidence.artifact.fileName -ne 'ClimbAndMaintain-ACARS-Setup-x64.exe') {
+            throw "Evidence must identify the canonical ClimbAndMaintain-ACARS-Setup-x64.exe installer."
+          }
+
+          git cat-file -e "$($evidence.applicationCommit)^{commit}"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Evidence applicationCommit is not available in this repository."
+          }
+
+          $mergeBase = [string] (git merge-base $evidence.applicationCommit $env:GITHUB_SHA)
+          if ($LASTEXITCODE -ne 0) {
+            throw "Unable to establish ancestry for the tested candidate commit."
+          }
+          if ($mergeBase.Trim() -ne $evidence.applicationCommit) {
+            throw "The tested candidate commit is not an ancestor of the release tag."
+          }
+
+          $changed = @(git diff --name-only $evidence.applicationCommit $env:GITHUB_SHA)
+          $unexpected = @($changed | Where-Object { $_ -ne $evidencePath })
+          if ($unexpected.Count -gt 0) {
+            throw "Tagged source differs from the tested candidate outside the evidence file: $($unexpected -join ', ')"
+          }
+
+          $runJson = gh api "/repos/$env:GITHUB_REPOSITORY/actions/runs/$($evidence.candidateWorkflow.workflowRunId)"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Unable to read the candidate workflow run."
+          }
+          $run = $runJson | ConvertFrom-Json
+          if ($run.head_sha -ne $evidence.applicationCommit) {
+            throw "Candidate workflow commit does not match evidence applicationCommit."
+          }
+          $expectedWorkflowPath = ".github/workflows/release-candidate.yml"
+          $workflowPathMatches = (
+            $run.path -eq $expectedWorkflowPath -or
+            ([string] $run.path).StartsWith("$expectedWorkflowPath@", [StringComparison]::Ordinal)
+          )
+          if ($run.conclusion -ne "success" -or $run.event -ne "workflow_dispatch" -or -not $workflowPathMatches) {
+            throw "Evidence does not reference a successful Release candidate workflow."
+          }
+          $testedAt = [DateTimeOffset]::Parse([string] $evidence.testedAtUtc)
+          $candidateCompletedAt = [DateTimeOffset]::Parse([string] $run.updated_at)
+          if ($testedAt -lt $candidateCompletedAt) {
+            throw "Live simulator evidence predates completion of the referenced candidate workflow."
+          }
+
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "evidence_path=$evidencePath" >> $env:GITHUB_OUTPUT
+          "run_id=$($evidence.candidateWorkflow.workflowRunId)" >> $env:GITHUB_OUTPUT
+          "artifact_name=$($evidence.candidateWorkflow.artifactName)" >> $env:GITHUB_OUTPUT
+          "installer_name=$($evidence.artifact.fileName)" >> $env:GITHUB_OUTPUT
+          "installer_sha256=$($evidence.artifact.sha256.ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+
+      - name: Download tested immutable candidate
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_RUN_ID: ${{ steps.evidence.outputs.run_id }}
+          CANDIDATE_ARTIFACT: ${{ steps.evidence.outputs.artifact_name }}
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts/release | Out-Null
+          gh run download $env:CANDIDATE_RUN_ID --name $env:CANDIDATE_ARTIFACT --dir artifacts/release
+          if ($LASTEXITCODE -ne 0) { throw "Candidate artifact download failed." }
+
+      - name: Verify downloaded candidate
+        shell: pwsh
+        env:
+          INSTALLER_NAME: ${{ steps.evidence.outputs.installer_name }}
+          EXPECTED_SHA256: ${{ steps.evidence.outputs.installer_sha256 }}
+        run: |
+          $releaseDirectory = (Resolve-Path -LiteralPath artifacts/release).Path
+          $candidateFiles = @(Get-ChildItem -LiteralPath $releaseDirectory -Recurse -File)
+          if ($candidateFiles.Count -ne 2) {
+            throw "The candidate artifact must contain exactly the installer and SHA256SUMS.txt."
+          }
+          $nestedFiles = @($candidateFiles | Where-Object { $_.DirectoryName -ne $releaseDirectory })
+          if ($nestedFiles.Count -ne 0) {
+            throw "Candidate files must be at the artifact root."
+          }
+          $expectedNames = @($env:INSTALLER_NAME, 'SHA256SUMS.txt')
+          $unexpectedNames = @($candidateFiles | Where-Object { $_.Name -notin $expectedNames })
+          if ($unexpectedNames.Count -ne 0 -or $env:INSTALLER_NAME -ne 'ClimbAndMaintain-ACARS-Setup-x64.exe') {
+            throw "The candidate contains a non-canonical release filename."
+          }
+          $installerPath = Join-Path $releaseDirectory $env:INSTALLER_NAME
+          $checksumPath = Join-Path $releaseDirectory 'SHA256SUMS.txt'
+          $actual = (Get-FileHash -LiteralPath $installerPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne $env:EXPECTED_SHA256) {
+            throw "Candidate installer hash does not match live-test evidence."
+          }
+          $expectedLine = "$($env:EXPECTED_SHA256)  $($env:INSTALLER_NAME)"
+          $checksumLines = @(Get-Content -LiteralPath $checksumPath)
+          if ($checksumLines.Count -ne 1 -or $checksumLines[0] -ne $expectedLine) {
+            throw "SHA256SUMS.txt does not identify the tested installer hash."
+          }
+          ./scripts/Assert-NsisPayload.ps1 -InstallerPath $installerPath
+          ./scripts/Assert-NoMicrosoftSimConnect.ps1 -Path artifacts/release -InspectBuildMetadata
+
+      - name: Publish GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.evidence.outputs.version }}
+          EVIDENCE_PATH: ${{ steps.evidence.outputs.evidence_path }}
+        run: |
+          $installer = (Resolve-Path -LiteralPath artifacts/release/ClimbAndMaintain-ACARS-Setup-x64.exe).Path
+          $checksums = (Resolve-Path -LiteralPath artifacts/release/SHA256SUMS.txt).Path
+          $evidence = (Resolve-Path -LiteralPath $env:EVIDENCE_PATH).Path
+          $notes = Join-Path $env:RUNNER_TEMP "release-notes-$env:VERSION.md"
+          ./scripts/Get-ChangelogReleaseNotes.ps1 -Version $env:VERSION -OutputPath $notes
+          gh release create $env:GITHUB_REF_NAME $installer $checksums $evidence --verify-tag --title "Climb and Maintain ACARS $env:VERSION" --notes-file $notes
+          if ($LASTEXITCODE -ne 0) { throw "GitHub release publication failed." }

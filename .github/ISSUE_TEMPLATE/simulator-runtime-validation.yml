@@ -1,0 +1,75 @@
+name: Simulator runtime release validation
+description: Track the mandatory user-supplied-library release evidence for both simulators.
+title: "[Release gate] Runtime SimConnect workflow for v"
+labels:
+  - release-blocker
+  - simulator-integration
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This replaces Microsoft DLL redistribution research as the simulator release blocker. Do not attach either tested DLL. Complete and commit the machine-readable evidence file described in docs/RELEASES.md.
+  - type: input
+    id: version
+    attributes:
+      label: Release version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: candidate-run
+    attributes:
+      label: Immutable candidate workflow run
+    validations:
+      required: true
+  - type: input
+    id: evidence
+    attributes:
+      label: Committed evidence path
+      placeholder: docs/release/evidence/v0.1.0.json
+    validations:
+      required: true
+  - type: checkboxes
+    id: policy
+    attributes:
+      label: Distribution policy
+      options:
+        - label: The candidate contains no Microsoft native or managed SimConnect DLL.
+          required: true
+        - label: The application did not download either library.
+          required: true
+        - label: The complete real adapter was present in the ordinary build.
+          required: true
+  - type: checkboxes
+    id: msfs20
+    attributes:
+      label: MSFS 2020
+      options:
+        - label: Discovery behavior and manual selection tested.
+          required: true
+        - label: Target-specific validation and live connection passed.
+          required: true
+        - label: Identity, SimVars, read-only LVars, reload, and restart recovery passed.
+          required: true
+        - label: Connectivity was enabled without recompilation or reinstallation.
+          required: true
+  - type: checkboxes
+    id: msfs24
+    attributes:
+      label: MSFS 2024
+      options:
+        - label: Discovery behavior and manual selection tested independently.
+          required: true
+        - label: Target-specific validation and live connection passed independently.
+          required: true
+        - label: Identity, SimVars, read-only LVars, reload, and restart recovery passed.
+          required: true
+        - label: Connectivity was enabled without recompilation or reinstallation.
+          required: true
+  - type: checkboxes
+    id: degraded
+    attributes:
+      label: Missing-prerequisite behavior
+      options:
+        - label: Configuration, diagnostics, phpVMS setup, and replay remained usable with no library.
+          required: true

@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "id": "cm.universal.msfs",
+    "name": "Universal MSFS",
+    "author": "Climb and Maintain, SPC",
+    "license": "Apache-2.0",
+    "priority": 0,
+    "simulators": ["msfs"]
+  },
+  "match": [],
+  "mappings": {
+    "autopilot": { "kind": "simVar", "name": "AUTOPILOT MASTER", "unit": "bool", "operator": "greaterThan", "compareTo": 0 },
+    "battery": { "kind": "simVar", "name": "ELECTRICAL MASTER BATTERY", "unit": "bool", "operator": "greaterThan", "compareTo": 0 },
+    "beacon": { "kind": "simVar", "name": "LIGHT BEACON", "unit": "bool", "operator": "greaterThan", "compareTo": 0 },
+    "landingLights": { "kind": "simVar", "name": "LIGHT LANDING", "unit": "bool", "operator": "greaterThan", "compareTo": 0 },
+    "navigationLights": { "kind": "simVar", "name": "LIGHT NAV", "unit": "bool", "operator": "greaterThan", "compareTo": 0 },
+    "parkingBrake": { "kind": "simVar", "name": "BRAKE PARKING POSITION", "unit": "bool", "operator": "greaterThan", "compareTo": 0 },
+    "strobeLights": { "kind": "simVar", "name": "LIGHT STROBE", "unit": "bool", "operator": "greaterThan", "compareTo": 0 },
+    "taxiLights": { "kind": "simVar", "name": "LIGHT TAXI", "unit": "bool", "operator": "greaterThan", "compareTo": 0 },
+    "transponderCode": { "kind": "simVar", "name": "TRANSPONDER CODE:1", "unit": "number", "operator": "greaterThanOrEqual", "compareTo": 0 }
+  },
+  "disabled": {},
+  "features": { "genericTelemetry": true }
+}

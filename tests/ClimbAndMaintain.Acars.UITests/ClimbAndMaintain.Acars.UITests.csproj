@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <Platforms>x64</Platforms>
+    <PlatformTarget Condition="'$(OS)' == 'Windows_NT'">x64</PlatformTarget>
+    <PlatformTarget Condition="'$(OS)' != 'Windows_NT'">AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <OutputType>Exe</OutputType>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FlaUI.Core">
+      <ExcludeAssets Condition="'$(OS)' != 'Windows_NT'">runtime</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="FlaUI.UIA3">
+      <ExcludeAssets Condition="'$(OS)' != 'Windows_NT'">runtime</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="xunit.v3" />
+  </ItemGroup>
+  <Target Name="RemoveFlaUiDesktopRuntimeOnNonWindows"
+          AfterTargets="AddTransitiveFrameworkReferences"
+          BeforeTargets="ResolveFrameworkReferences"
+          Condition="'$(OS)' != 'Windows_NT'">
+    <ItemGroup>
+      <FrameworkReference Remove="Microsoft.WindowsDesktop.App.WindowsForms" />
+    </ItemGroup>
+  </Target>
+</Project>
