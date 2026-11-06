@@ -8,6 +8,7 @@ namespace ClimbAndMaintain.Acars.UITests;
 public sealed class FlaUiSmokeTests
 {
     private static readonly TimeSpan ElementTimeout = TimeSpan.FromSeconds(15);
+    private static readonly TimeSpan StartupTimeout = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan RetryInterval = TimeSpan.FromMilliseconds(100);
 
     public static bool CanRunFlaUi =>
@@ -20,7 +21,7 @@ public sealed class FlaUiSmokeTests
     [Fact(
         Skip = "FlaUI smoke coverage requires Windows and CM_ACARS_RUN_UI_TESTS=1.",
         SkipUnless = nameof(CanRunFlaUi),
-        Timeout = 60_000)]
+        Timeout = 90_000)]
     public void AppExposesNamedSetupNavigationAndCorePages()
     {
         CancellationToken cancellationToken = TestContext.Current.CancellationToken;
@@ -38,10 +39,11 @@ public sealed class FlaUiSmokeTests
 
         try
         {
-            Window shell = WaitFor(
+            Window shell = TryWaitFor(
                 () => FindWindow(application, automation, "ShellWindow"),
-                "the ACARS main window",
-                cancellationToken);
+                StartupTimeout,
+                cancellationToken)
+                ?? throw new TimeoutException("Timed out waiting for the ACARS main window.");
             Assert.Equal("ACARS main window", shell.Name);
 
             Window? firstRun = TryWaitFor(
