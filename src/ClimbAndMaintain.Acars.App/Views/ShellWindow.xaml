@@ -588,6 +588,8 @@
 
     <ScrollViewer Grid.Row="1"
                   Grid.Column="1"
+                  Background="{DynamicResource WindowBackgroundBrush}"
+                  Foreground="{DynamicResource TextBrush}"
                   Padding="{StaticResource PagePadding}"
                   HorizontalScrollBarVisibility="Disabled"
                   VerticalScrollBarVisibility="Auto"
