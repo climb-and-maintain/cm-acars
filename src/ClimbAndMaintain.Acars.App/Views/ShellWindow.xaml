@@ -573,6 +573,14 @@
         <ListBox.ItemContainerStyle>
           <Style TargetType="{x:Type ListBoxItem}">
             <Setter Property="AutomationProperties.Name" Value="{Binding Name}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="Padding" Value="12,9" />
+            <Style.Triggers>
+              <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+              </Trigger>
+            </Style.Triggers>
           </Style>
         </ListBox.ItemContainerStyle>
       </ListBox>

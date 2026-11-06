@@ -134,9 +134,26 @@ public sealed class XamlAccessibilityTests
         Assert.Equal("Primary navigation", (string?)navigation.Attribute("AutomationProperties.Name"));
         XElement containerStyle = Assert.Single(navigation.Elements(XName.Get("ListBox.ItemContainerStyle", PresentationNamespace)));
         XElement style = Assert.Single(containerStyle.Elements(XName.Get("Style", PresentationNamespace)));
-        XElement accessibleName = Assert.Single(style.Elements(XName.Get("Setter", PresentationNamespace)));
-        Assert.Equal("AutomationProperties.Name", (string?)accessibleName.Attribute("Property"));
+        XElement accessibleName = Assert.Single(
+            style.Elements(XName.Get("Setter", PresentationNamespace)),
+            static setter => (string?)setter.Attribute("Property") == "AutomationProperties.Name");
         Assert.Equal("{Binding Name}", (string?)accessibleName.Attribute("Value"));
+
+        XElement selectedTrigger = Assert.Single(
+            style.Descendants(XName.Get("Trigger", PresentationNamespace)),
+            static trigger => (string?)trigger.Attribute("Property") == "IsSelected"
+                && (string?)trigger.Attribute("Value") == "True");
+        foreach ((string property, string brush) in new[]
+        {
+            ("Background", "{DynamicResource AccentBrush}"),
+            ("Foreground", "{DynamicResource AccentTextBrush}"),
+        })
+        {
+            XElement setter = Assert.Single(
+                selectedTrigger.Elements(XName.Get("Setter", PresentationNamespace)),
+                element => (string?)element.Attribute("Property") == property);
+            Assert.Equal(brush, (string?)setter.Attribute("Value"));
+        }
 
         XElement pageScroller = FindByAutomationId(shell, "{Binding SelectedPage.AutomationId}");
         Assert.Equal("ScrollViewer", pageScroller.Name.LocalName);
@@ -277,10 +294,104 @@ public sealed class XamlAccessibilityTests
             .Where(static target => !string.IsNullOrWhiteSpace(target))
             .Select(static target => target!)
             .ToArray();
-        foreach (string target in new[] { "Window", "TextBlock", "Label", "Button", "TextBox", "PasswordBox", "ComboBox", "GroupBox" })
+        foreach (string target in new[] { "Window", "TextBlock", "Label", "Button", "TextBox", "PasswordBox", "ComboBox", "CheckBox", "ListBox", "GroupBox" })
         {
             Assert.Contains(target, nativeStyleTargets);
         }
+    }
+
+    [Theory]
+    [InlineData("Theme.Light.xaml")]
+    [InlineData("Theme.Dark.xaml")]
+    public void NormalThemeTextHasAtLeastFourPointFiveToOneContrast(string themeName)
+    {
+        string path = RepositoryLayout.FromRoot("src", "ClimbAndMaintain.Acars.App", "Themes", themeName);
+        XDocument theme = XDocument.Load(path);
+        Dictionary<string, string> colors = theme
+            .Descendants(XName.Get("SolidColorBrush", PresentationNamespace))
+            .ToDictionary(
+                static brush => (string)brush.Attribute(XName.Get("Key", XamlNamespace))!,
+                static brush => (string)brush.Attribute("Color")!,
+                StringComparer.Ordinal);
+
+        (string Foreground, string Background)[] textPairs =
+        [
+            ("TextBrush", "WindowBackgroundBrush"),
+            ("TextBrush", "SurfaceBrush"),
+            ("TextBrush", "SurfaceMutedBrush"),
+            ("MutedTextBrush", "WindowBackgroundBrush"),
+            ("MutedTextBrush", "SurfaceBrush"),
+            ("MutedTextBrush", "SurfaceMutedBrush"),
+            ("AccentTextBrush", "AccentBrush"),
+        ];
+
+        foreach ((string foreground, string background) in textPairs)
+        {
+            double ratio = ContrastRatio(colors[foreground], colors[background]);
+            Assert.True(
+                ratio >= 4.5,
+                $"{themeName}: {foreground} on {background} has only {ratio:F2}:1 contrast; require 4.5:1.");
+        }
+
+        double borderContrast = ContrastRatio(colors["BorderBrush"], colors["SurfaceBrush"]);
+        Assert.True(
+            borderContrast >= 3.0,
+            $"{themeName}: control borders need at least 3:1 contrast, but have {borderContrast:F2}:1.");
+    }
+
+    [Fact]
+    public void NativeInteractiveControlsUseExplicitThemeForegroundsAndSurfaces()
+    {
+        XDocument tokens = XDocument.Load(RepositoryLayout.FromRoot(
+            "src", "ClimbAndMaintain.Acars.App", "Themes", "Tokens.xaml"));
+
+        foreach (string target in new[] { "Button", "TextBox", "PasswordBox", "ComboBox", "CheckBox", "ListBox" })
+        {
+            XElement style = Assert.Single(
+                tokens.Descendants(XName.Get("Style", PresentationNamespace)),
+                element => (string?)element.Attribute("TargetType") == target);
+            XElement foreground = Assert.Single(
+                style.Elements(XName.Get("Setter", PresentationNamespace)),
+                static setter => (string?)setter.Attribute("Property") == "Foreground");
+            Assert.Equal("{DynamicResource TextBrush}", (string?)foreground.Attribute("Value"));
+
+            if (target == "CheckBox")
+            {
+                continue;
+            }
+
+            XElement background = Assert.Single(
+                style.Elements(XName.Get("Setter", PresentationNamespace)),
+                static setter => (string?)setter.Attribute("Property") == "Background");
+            string expectedBackground = target == "Button"
+                ? "{DynamicResource SurfaceMutedBrush}"
+                : "{DynamicResource SurfaceBrush}";
+            Assert.Equal(expectedBackground, (string?)background.Attribute("Value"));
+        }
+    }
+
+    private static double ContrastRatio(string foreground, string background)
+    {
+        double lightnessA = RelativeLuminance(foreground);
+        double lightnessB = RelativeLuminance(background);
+        return (Math.Max(lightnessA, lightnessB) + 0.05) / (Math.Min(lightnessA, lightnessB) + 0.05);
+    }
+
+    private static double RelativeLuminance(string color)
+    {
+        Assert.Matches("^#[0-9A-Fa-f]{6}$", color);
+
+        static double Channel(string hex)
+        {
+            double value = Convert.ToInt32(hex, 16) / 255.0;
+            return value <= 0.04045
+                ? value / 12.92
+                : Math.Pow((value + 0.055) / 1.055, 2.4);
+        }
+
+        return 0.2126 * Channel(color[1..3])
+            + 0.7152 * Channel(color[3..5])
+            + 0.0722 * Channel(color[5..7]);
     }
 
     [Fact]
