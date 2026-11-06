@@ -329,6 +329,11 @@ public sealed class SimConnectProviderTests
         Assert.True(await reader.MoveNextAsync());
         Assert.True(factory.Instances.Count >= 2);
         Assert.Equal(SimulatorKind.Msfs2020, reader.Current.Simulator.Kind);
+        while (provider.ConnectionState != SimulatorConnectionState.Ready)
+        {
+            await Task.Delay(10, timeout.Token);
+        }
+
         Assert.Equal(SimulatorConnectionState.Ready, provider.ConnectionState);
     }
 
