@@ -29,7 +29,12 @@
       </DockPanel>
     </Border>
 
-    <ScrollViewer Grid.Row="1" Padding="30" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <ScrollViewer Grid.Row="1"
+                  Background="{DynamicResource WindowBackgroundBrush}"
+                  Foreground="{DynamicResource TextBrush}"
+                  Padding="30"
+                  VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
       <Grid>
         <StackPanel Visibility="{Binding IsWelcomeStep, Converter={StaticResource BooleanToVisibilityConverter}}"
                     AutomationProperties.Name="Welcome setup page">
