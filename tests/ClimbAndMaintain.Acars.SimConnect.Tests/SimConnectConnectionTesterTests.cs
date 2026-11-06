@@ -73,7 +73,7 @@ public sealed class SimConnectConnectionTesterTests
     public async Task OtherGetNextDispatchFailuresRemainFatal()
     {
         using TemporaryFile library = new(PortableExecutableFixture.Create());
-        FakeSimConnectNativeApiFactory factory = new(PacketFixtures.Open(12, 12))
+        FakeSimConnectNativeApiFactory factory = new()
         {
             EmptyQueueResult = unchecked((int)0x80004003),
         };
