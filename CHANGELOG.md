@@ -36,4 +36,3 @@ All notable changes are recorded here. This project follows [Semantic Versioning
 - Do not publish or redistribute this candidate as a verified release until the release evidence and acceptance checks are complete.
 
 [Unreleased]: https://github.com/climb-and-maintain/cm-acars/commits/main
-[0.1.0-beta.1]: https://github.com/climb-and-maintain/cm-acars/compare/main...main
