@@ -35,10 +35,13 @@ internal sealed class FakeSimConnectNativeApiFactory : ISimConnectNativeApiFacto
             IsSlewActive = IsSlewActive,
             PauseState = PauseState,
             TransponderCodeBco16 = TransponderCodeBco16,
+            EmptyQueueResult = EmptyQueueResult,
         };
         instances.Add(Instance);
         return Instance;
     }
+
+    public int EmptyQueueResult { get; init; }
 
     public string? AsynchronouslyRejectedDatumName { get; init; }
 
@@ -88,6 +91,8 @@ internal sealed class FakeSimConnectNativeApi : ISimConnectNativeApi
 
     public IReadOnlyList<(uint DefinitionId, SimConnectPeriod Period)> Requests => requests.ToArray();
 
+    public int EmptyQueueResult { get; init; }
+
     public string? AsynchronouslyRejectedDatumName { get; init; }
 
     public DateTimeOffset SimulatorTime { get; init; }
@@ -121,7 +126,7 @@ internal sealed class FakeSimConnectNativeApi : ISimConnectNativeApi
         {
             data = 0;
             dataSize = 0;
-            return 0;
+            return EmptyQueueResult;
         }
 
         if (packet.Length == 0)

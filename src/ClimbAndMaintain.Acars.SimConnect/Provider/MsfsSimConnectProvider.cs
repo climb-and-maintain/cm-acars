@@ -585,6 +585,13 @@ public sealed class MsfsSimConnectProvider : ISimulatorTelemetryProvider, ISimCo
         ref bool telemetryConfigured)
     {
         int dispatchResult = api.GetNextDispatch(connection, out nint data, out uint dataSize);
+        if (dispatchResult == SimConnectConstants.StatusDispatchEFail)
+        {
+            // A transient empty-queue E_FAIL must not fault or reconnect an otherwise healthy session.
+            // The initial handshake still has its own timeout; other HRESULT failures remain fatal.
+            return false;
+        }
+
         EnsureSucceeded(dispatchResult, "SimConnect_GetNextDispatch");
         if (data == 0 && dataSize == 0)
         {

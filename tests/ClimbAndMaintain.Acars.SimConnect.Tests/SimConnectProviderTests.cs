@@ -74,6 +74,72 @@ public sealed class SimConnectProviderTests
     }
 
     [Fact]
+    public async Task EmptyQueueEFailDoesNotFaultAConnectedProvider()
+    {
+        using TemporaryFile library = new(PortableExecutableFixture.Create());
+        FakeSimConnectNativeApiFactory factory = new(PacketFixtures.Open(12, 12))
+        {
+            EmptyQueueResult = SimConnectConstants.StatusDispatchEFail,
+        };
+        await using MsfsSimConnectProvider provider = new(
+            new()
+            {
+                Target = SimConnectTarget.Msfs2024,
+                LibraryPath = library.Path,
+                ConnectionTimeout = TimeSpan.FromSeconds(2),
+            },
+            new SimConnectLibraryValidator(),
+            factory,
+            platformSupported: true);
+        using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(3));
+
+        SimulatorConnectionResult result = await provider.ConnectAsync(timeout.Token);
+        await using IAsyncEnumerator<TelemetrySnapshot> reader = provider
+            .ReadTelemetryAsync(timeout.Token)
+            .GetAsyncEnumerator(timeout.Token);
+
+        Assert.True(result.Succeeded, result.Message);
+        Assert.True(await reader.MoveNextAsync());
+        Assert.Equal(SimulatorKind.Msfs2024, reader.Current.Simulator.Kind);
+        await Task.Delay(50, timeout.Token);
+        Assert.NotEqual(SimulatorConnectionState.Faulted, provider.ConnectionState);
+    }
+
+    [Fact]
+    public async Task OtherDispatchFailuresStillFaultAConnectedProvider()
+    {
+        using TemporaryFile library = new(PortableExecutableFixture.Create());
+        FakeSimConnectNativeApiFactory factory = new(PacketFixtures.Open(12, 12))
+        {
+            EmptyQueueResult = unchecked((int)0x80004003),
+        };
+        await using MsfsSimConnectProvider provider = new(
+            new()
+            {
+                Target = SimConnectTarget.Msfs2024,
+                LibraryPath = library.Path,
+                ConnectionTimeout = TimeSpan.FromSeconds(2),
+            },
+            new SimConnectLibraryValidator(),
+            factory,
+            platformSupported: true);
+        using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(3));
+        TaskCompletionSource faulted = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        provider.ConnectionStateChanged += (_, args) =>
+        {
+            if (args.Current == SimulatorConnectionState.Faulted)
+            {
+                faulted.TrySetResult();
+            }
+        };
+
+        _ = await provider.ConnectAsync(timeout.Token);
+        await faulted.Task.WaitAsync(timeout.Token);
+
+        Assert.Equal(SimulatorConnectionState.Faulted, provider.ConnectionState);
+    }
+
+    [Fact]
     public async Task RejectedOptionalClockDoesNotStopOtherSupplementalOrCoreTelemetry()
     {
         using TemporaryFile library = new(PortableExecutableFixture.Create());
@@ -263,6 +329,11 @@ public sealed class SimConnectProviderTests
         Assert.True(await reader.MoveNextAsync());
         Assert.True(factory.Instances.Count >= 2);
         Assert.Equal(SimulatorKind.Msfs2020, reader.Current.Simulator.Kind);
+        while (provider.ConnectionState != SimulatorConnectionState.Ready)
+        {
+            await Task.Delay(10, timeout.Token);
+        }
+
         Assert.Equal(SimulatorConnectionState.Ready, provider.ConnectionState);
     }
 

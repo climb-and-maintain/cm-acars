@@ -29,6 +29,69 @@ public sealed class SimConnectConnectionTesterTests
     }
 
     [Fact]
+    public async Task EmptyQueueEFailDoesNotAbortAValidHandshakeAndTelemetrySample()
+    {
+        using TemporaryFile library = new(PortableExecutableFixture.Create());
+        FakeSimConnectNativeApiFactory factory = new(PacketFixtures.Open(12, 12))
+        {
+            EmptyQueueResult = SimConnectConstants.StatusDispatchEFail,
+        };
+        SimConnectConnectionTester tester = new(new SimConnectLibraryValidator(), factory, platformSupported: true);
+
+        SimConnectConnectionTestResult result = await tester.TestAsync(
+            SimConnectTarget.Msfs2024,
+            library.Path,
+            TimeSpan.FromSeconds(2),
+            TestContext.Current.CancellationToken);
+
+        Assert.True(result.Succeeded, string.Join(Environment.NewLine, result.Diagnostics));
+        Assert.NotNull(result.Attestation);
+        Assert.NotNull(result.TelemetrySample);
+    }
+
+    [Fact]
+    public async Task RepeatedEmptyQueueEFailWithoutAHandshakeTimesOutRatherThanPassing()
+    {
+        using TemporaryFile library = new(PortableExecutableFixture.Create());
+        FakeSimConnectNativeApiFactory factory = new()
+        {
+            EmptyQueueResult = SimConnectConstants.StatusDispatchEFail,
+        };
+        SimConnectConnectionTester tester = new(new SimConnectLibraryValidator(), factory, platformSupported: true);
+
+        SimConnectConnectionTestResult result = await tester.TestAsync(
+            SimConnectTarget.Msfs2024,
+            library.Path,
+            TimeSpan.FromMilliseconds(150),
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(SimConnectConnectionTestOutcome.TimedOut, result.Outcome);
+        Assert.Null(result.Attestation);
+    }
+
+    [Fact]
+    public async Task OtherGetNextDispatchFailuresRemainFatal()
+    {
+        using TemporaryFile library = new(PortableExecutableFixture.Create());
+        FakeSimConnectNativeApiFactory factory = new()
+        {
+            EmptyQueueResult = unchecked((int)0x80004003),
+        };
+        SimConnectConnectionTester tester = new(new SimConnectLibraryValidator(), factory, platformSupported: true);
+
+        SimConnectConnectionTestResult result = await tester.TestAsync(
+            SimConnectTarget.Msfs2024,
+            library.Path,
+            TimeSpan.FromSeconds(2),
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(SimConnectConnectionTestOutcome.NativeCallFailed, result.Outcome);
+        Assert.Null(result.Attestation);
+        Assert.Contains(result.Diagnostics, diagnostic =>
+            diagnostic.Message.Contains("SimConnect_GetNextDispatch", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public async Task RejectsAHandshakeFromTheOtherSimulatorGeneration()
     {
         using TemporaryFile library = new(PortableExecutableFixture.Create());

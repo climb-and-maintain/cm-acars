@@ -275,6 +275,13 @@ public sealed class SimConnectConnectionTester
             while (true)
             {
                 int dispatchResult = api.GetNextDispatch(connection, out nint data, out uint dataSize);
+                if (dispatchResult == SimConnectConstants.StatusDispatchEFail)
+                {
+                    // Treat a possible empty queue as idle, not as a successful handshake.
+                    // If the simulator never sends OPEN and telemetry, the normal timeout still fails the test.
+                    break;
+                }
+
                 EnsureSucceeded(dispatchResult, "SimConnect_GetNextDispatch");
 
                 if (data == 0 && dataSize == 0)

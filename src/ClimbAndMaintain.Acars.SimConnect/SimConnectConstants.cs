@@ -12,6 +12,9 @@ public static class SimConnectConstants
     public const uint DataRequestFlagTagged = 2;
 
     public const int StatusRemoteDisconnect = unchecked((int)0xC000013C);
+    // Some native SimConnect dispatch implementations report E_FAIL when the receive queue is drained.
+    // This is only a candidate idle result for GetNextDispatch; other native calls must still fail normally.
+    public const int StatusDispatchEFail = unchecked((int)0x80004005);
 
     public static bool Succeeded(int hResult) => hResult >= 0;
 
