@@ -1,2 +1,3 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Normalize detected text files in the repository and the working tree.
+# Match .editorconfig LF requirements across Windows and non-Windows checkouts.
+* text=auto eol=lf
