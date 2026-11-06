@@ -80,8 +80,8 @@ Assert-Condition ([DateTimeOffset]::TryParse([string] $evidence.testedAtUtc, [re
 $simulators = @($evidence.simulators)
 Assert-Condition ($simulators.Count -eq 2) 'Evidence must contain exactly two simulator records.'
 $targets = @($simulators | ForEach-Object { [string] $_.target })
-Assert-Condition (($targets | Where-Object { $_ -eq 'msfs20' }).Count -eq 1) 'Evidence must contain exactly one msfs20 record.'
-Assert-Condition (($targets | Where-Object { $_ -eq 'msfs24' }).Count -eq 1) 'Evidence must contain exactly one msfs24 record.'
+Assert-Condition (@($targets | Where-Object { $_ -eq 'msfs20' }).Count -eq 1) 'Evidence must contain exactly one msfs20 record.'
+Assert-Condition (@($targets | Where-Object { $_ -eq 'msfs24' }).Count -eq 1) 'Evidence must contain exactly one msfs24 record.'
 
 foreach ($simulator in $simulators) {
     $prefix = [string] $simulator.target
