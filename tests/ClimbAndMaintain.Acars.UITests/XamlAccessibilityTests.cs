@@ -395,6 +395,90 @@ public sealed class XamlAccessibilityTests
     }
 
     [Fact]
+    public void PageCanvasesAndExplicitTitleStylesRespectTheActiveTheme()
+    {
+        XDocument shell = LoadView("ShellWindow.xaml").Document;
+        XElement shellCanvas = Assert.Single(
+            shell.Descendants(XName.Get("ScrollViewer", PresentationNamespace)),
+            static element => (string?)element.Attribute("AutomationProperties.AutomationId")
+                == "{Binding SelectedPage.AutomationId}");
+        XDocument wizard = LoadView("FirstRunWindow.xaml").Document;
+        XElement wizardCanvas = Assert.Single(
+            wizard.Descendants(XName.Get("ScrollViewer", PresentationNamespace)));
+
+        foreach (XElement canvas in new[] { shellCanvas, wizardCanvas })
+        {
+            Assert.Equal(
+                "{DynamicResource WindowBackgroundBrush}",
+                (string?)canvas.Attribute("Background"));
+            Assert.Equal(
+                "{DynamicResource TextBrush}",
+                (string?)canvas.Attribute("Foreground"));
+        }
+
+        XDocument tokens = XDocument.Load(RepositoryLayout.FromRoot(
+            "src", "ClimbAndMaintain.Acars.App", "Themes", "Tokens.xaml"));
+        foreach (string styleName in new[] { "PageTitleStyle", "SectionTitleStyle", "StatusTextStyle" })
+        {
+            XElement style = Assert.Single(
+                tokens.Descendants(XName.Get("Style", PresentationNamespace)),
+                element => (string?)element.Attribute(XName.Get("Key", XamlNamespace)) == styleName);
+            XElement textColor = Assert.Single(
+                style.Elements(XName.Get("Setter", PresentationNamespace)),
+                static element => (string?)element.Attribute("Property") == "Foreground");
+            Assert.Equal(
+                "{DynamicResource TextBrush}",
+                (string?)textColor.Attribute("Value"));
+        }
+    }
+
+    [Fact]
+    public void ButtonsUseThemedChromeForDisabledTextAndVisibleKeyboardFocus()
+    {
+        XDocument tokens = XDocument.Load(RepositoryLayout.FromRoot(
+            "src", "ClimbAndMaintain.Acars.App", "Themes", "Tokens.xaml"));
+        XElement buttonStyle = Assert.Single(
+            tokens.Descendants(XName.Get("Style", PresentationNamespace)),
+            static element => (string?)element.Attribute("TargetType") == "Button");
+        XElement template = Assert.Single(
+            buttonStyle.Descendants(XName.Get("ControlTemplate", PresentationNamespace)));
+        XElement chrome = Assert.Single(
+            template.Descendants(XName.Get("Border", PresentationNamespace)),
+            element => (string?)element.Attribute(XName.Get("Name", XamlNamespace)) == "ButtonChrome");
+        Assert.Equal("{TemplateBinding Background}", (string?)chrome.Attribute("Background"));
+
+        XElement presenter = Assert.Single(
+            template.Descendants(XName.Get("ContentPresenter", PresentationNamespace)));
+        Assert.Equal(
+            "{TemplateBinding Foreground}",
+            (string?)presenter.Attribute("TextElement.Foreground"));
+
+        XElement disabled = Assert.Single(
+            template.Descendants(XName.Get("Trigger", PresentationNamespace)),
+            static element => (string?)element.Attribute("Property") == "IsEnabled"
+                && (string?)element.Attribute("Value") == "False");
+        Assert.Contains(
+            disabled.Elements(XName.Get("Setter", PresentationNamespace)),
+            static element => (string?)element.Attribute("Property") == "Foreground"
+                && (string?)element.Attribute("Value") == "{DynamicResource MutedTextBrush}");
+        Assert.Contains(
+            disabled.Elements(XName.Get("Setter", PresentationNamespace)),
+            static element => (string?)element.Attribute("TargetName") == "ButtonChrome"
+                && (string?)element.Attribute("Property") == "Background"
+                && (string?)element.Attribute("Value") == "{DynamicResource SurfaceBrush}");
+
+        XElement focused = Assert.Single(
+            template.Descendants(XName.Get("Trigger", PresentationNamespace)),
+            static element => (string?)element.Attribute("Property") == "IsKeyboardFocused"
+                && (string?)element.Attribute("Value") == "True");
+        Assert.Contains(
+            focused.Elements(XName.Get("Setter", PresentationNamespace)),
+            static element => (string?)element.Attribute("TargetName") == "ButtonChrome"
+                && (string?)element.Attribute("Property") == "BorderBrush"
+                && (string?)element.Attribute("Value") == "{DynamicResource AccentBrush}");
+    }
+
+    [Fact]
     public void AppLoadsSemanticThemeResourcesAndViewsDoNotHardCodeColors()
     {
         XDocument app = XDocument.Load(RepositoryLayout.FromRoot("src", "ClimbAndMaintain.Acars.App", "App.xaml"));
