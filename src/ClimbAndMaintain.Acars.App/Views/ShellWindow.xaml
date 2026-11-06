@@ -569,7 +569,13 @@
                SelectedItem="{Binding SelectedPage}"
                DisplayMemberPath="Name"
                AutomationProperties.Name="Primary navigation"
-               AutomationProperties.AutomationId="PrimaryNavigation" />
+               AutomationProperties.AutomationId="PrimaryNavigation">
+        <ListBox.ItemContainerStyle>
+          <Style TargetType="{x:Type ListBoxItem}">
+            <Setter Property="AutomationProperties.Name" Value="{Binding Name}" />
+          </Style>
+        </ListBox.ItemContainerStyle>
+      </ListBox>
     </Border>
 
     <ScrollViewer Grid.Row="1"
