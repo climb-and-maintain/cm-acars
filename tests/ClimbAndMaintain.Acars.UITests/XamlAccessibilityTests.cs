@@ -132,6 +132,11 @@ public sealed class XamlAccessibilityTests
         Assert.Equal("{Binding SelectedPage}", (string?)navigation.Attribute("SelectedItem"));
         Assert.Equal("Name", (string?)navigation.Attribute("DisplayMemberPath"));
         Assert.Equal("Primary navigation", (string?)navigation.Attribute("AutomationProperties.Name"));
+        XElement containerStyle = Assert.Single(navigation.Elements(XName.Get("ListBox.ItemContainerStyle", PresentationNamespace)));
+        XElement style = Assert.Single(containerStyle.Elements(XName.Get("Style", PresentationNamespace)));
+        XElement accessibleName = Assert.Single(style.Elements(XName.Get("Setter", PresentationNamespace)));
+        Assert.Equal("AutomationProperties.Name", (string?)accessibleName.Attribute("Property"));
+        Assert.Equal("{Binding Name}", (string?)accessibleName.Attribute("Value"));
 
         XElement pageScroller = FindByAutomationId(shell, "{Binding SelectedPage.AutomationId}");
         Assert.Equal("ScrollViewer", pageScroller.Name.LocalName);
