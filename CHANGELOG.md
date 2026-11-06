@@ -20,4 +20,19 @@ All notable changes are recorded here. This project follows [Semantic Versioning
 - Microsoft SimConnect binaries are excluded from source, CI artifacts, publish output, and installers.
 - User-selected native libraries are treated as trusted-code inputs and validated before connection attempts.
 
+## [0.1.0-beta.1] - 2026-11-06
+
+### Test candidate
+
+- First installer candidate for controlled Windows x64 acceptance testing; not yet a public beta or a claim of supported simulator compatibility.
+- Includes the .NET 10 WPF desktop client, native SimConnect adapter, aircraft-profile engine, phpVMS v7 integration, SQLite outbox, flight recovery, diagnostics, and telemetry replay.
+- Windows CI formatting, Release compilation, 181 automated tests, and CodeQL passed before preparing this candidate.
+
+### Validation still required
+
+- Live SimConnect and flight-telemetry validation on MSFS 2024 and, separately, MSFS 2020.
+- Installer, first-run, accessibility, phpVMS server integration, and end-to-end flight/PIREP testing with the exact candidate installer.
+- User-supplied compatible Microsoft native x64 SimConnect library is required for simulator connectivity; no Microsoft SimConnect binaries are bundled or downloaded.
+- Do not publish or redistribute this candidate as a verified release until the release evidence and acceptance checks are complete.
+
 [Unreleased]: https://github.com/climb-and-maintain/cm-acars/commits/main
