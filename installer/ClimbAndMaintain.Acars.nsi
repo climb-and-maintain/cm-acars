@@ -2,7 +2,6 @@ Unicode True
 ManifestDPIAware True
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
-SetShellVarContext current
 
 !include "MUI2.nsh"
 !include "LogicLib.nsh"
@@ -62,6 +61,9 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "Copyright 2026 ${PRODUCT_PUBLISHER}
 !insertmacro MUI_LANGUAGE "English"
 
 Function .onInit
+  ; NSIS runtime commands must live inside a Function or Section.
+  ; Keep shortcuts and special folders scoped to the current Windows user.
+  SetShellVarContext current
   ${IfNot} ${RunningX64}
     MessageBox MB_OK|MB_ICONSTOP "${PRODUCT_NAME} requires 64-bit Windows."
     Abort
@@ -118,6 +120,10 @@ LangString DESC_SEC_DESKTOP ${LANG_ENGLISH} "Create a shortcut on the current us
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC_CORE} $(DESC_SEC_CORE)
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC_DESKTOP} $(DESC_SEC_DESKTOP)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
+
+Function un.onInit
+  SetShellVarContext current
+FunctionEnd
 
 Section "Uninstall"
   SetRegView 64
